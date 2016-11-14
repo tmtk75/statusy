@@ -1,0 +1,7 @@
+{
+  "kiicloud://users": [{
+    "when": "USER_CREATED",
+    "what": "EXECUTE_SERVER_CODE",
+    "endpoint": "userCreated"
+  }]
+}
