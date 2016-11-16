@@ -56,7 +56,6 @@ class Login extends React.Component<AppProps, LoginState> {
         <TextField
           disabled={!!me}
           floatingLabelText="username"
-          style={{width: '48%'}}
           value={this.state.username}
           onChange={(e: React.FormEvent<TextField>) => this.setState({username: (e.target as any).value})}
           />
@@ -64,25 +63,28 @@ class Login extends React.Component<AppProps, LoginState> {
           disabled={!!me}
           type="password"
           floatingLabelText="password"
-          style={{width: '48%'}}
           value={this.state.password}
           onChange={(e: React.FormEvent<TextField>) => this.setState({password: (e.target as any).value})}
           />
-        <FlatButton
-          label="sign up"
-          disabled={!!me}
-          onClick={_ => dispatch(signUp({username, password}))}
-          />
-        <FlatButton
-          label="sign in"
-          disabled={!!me}
-          onClick={_ => dispatch(signIn({username, password}))}
-          />
-        <FlatButton
-          label="sign out"
-          disabled={!me}
-          onClick={_ => dispatch(signOut())}
-          />
+        <div style={{display:"flex", justifyContent:"center"}}>
+          <FlatButton
+            label="sign up"
+            disabled={!!me}
+            onClick={_ => dispatch(signUp({username, password}))}
+            />
+          <FlatButton
+            label="sign in"
+            disabled={!!me}
+            onClick={_ => dispatch(signIn({username, password}))}
+            />
+          </div>
+        <div style={{display:"flex", justifyContent:"center"}}>
+          <FlatButton
+            label="sign out"
+            disabled={!me}
+            onClick={_ => dispatch(signOut())}
+            />
+        </div>
       </div>
     )
   }
@@ -102,13 +104,13 @@ class Connect extends React.Component<AppProps, {github_token: string}> {
     const { dispatch, kiicloud: { profile: { me, group, groups }, mqtt: { client } } } = this.props;
     return (
       <div>
-        <div>
-          <TextField
-            floatingLabelText="github_token"
-            fullWidth={false}
-            value={this.state.github_token}
-            onChange={(e: React.FormEvent<TextField>) => this.setState({github_token: (e.target as any).value})}
-            />
+        <TextField
+          floatingLabelText="github_token"
+          fullWidth={true}
+          value={this.state.github_token}
+          onChange={(e: React.FormEvent<TextField>) => this.setState({github_token: (e.target as any).value})}
+          />
+        <div style={{display:"flex", justifyContent:"center"}}>
           <FlatButton
             label="join"
             disabled={!me || !this.state.github_token}
@@ -334,18 +336,6 @@ class AppStatusBar extends React.Component<AppProps, {}> {
   }
 }
 
-class LeftDrawer extends React.Component<AppProps, {}> {
-  render() {
-    const { dispatch, ui: { leftDrawer } } = this.props;
-    return (
-      <FlatButton
-        label="close"
-        onClick={() => dispatch(toggleLeftDrawer())}
-        />
-    )
-  }
-}
-
 class AppNaviBar extends React.Component<AppProps, {}> {
   render() {
     const { dispatch, ui: { leftDrawer } } = this.props;
@@ -362,6 +352,31 @@ class AppNaviBar extends React.Component<AppProps, {}> {
   }
 }
 
+class LeftDrawer extends React.Component<AppProps, {}> {
+  render() {
+    const { dispatch, ui: { leftDrawer } } = this.props;
+    const { kiicloud: { profile: { me } } } = this.props;
+    return (
+      <div>
+        <div className="appLeftDrawer-header">
+          <img src={me ? me.get("avatar_url") : null} width="40px" style={{margin:"2px", borderRadius:"2px"}}/>
+          <span style={{marginLeft:"0.5rem"}}>{me ? me.getUsername() : null}</span>
+        </div>
+        <div className="appLeftDrawer-body">
+          <Login {...this.props}/>
+          <Connect {...this.props}/>
+          <div style={{display:"flex", justifyContent:"center"}}>
+            <FlatButton
+              label="back"
+              onClick={() => dispatch(toggleLeftDrawer())}
+              />
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
 export default class App extends React.Component<AppProps, {}> {
   render() {
     return (
@@ -371,8 +386,6 @@ export default class App extends React.Component<AppProps, {}> {
         <div className="appBody">
           <Message {...this.props}/>
           <Members {...this.props}/>
-          <Login {...this.props}/>
-          <Connect {...this.props}/>
           <Group {...this.props}/>
           <Invite {...this.props}/>
           <hr />

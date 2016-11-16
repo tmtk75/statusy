@@ -30,6 +30,7 @@ app.on('ready', () => {
     //height: 640,
     width: 320,
     height: 568,
+    resizable: false,
     'node-integration': false,
     //transparent: true,
     frame: false,
