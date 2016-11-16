@@ -66,6 +66,11 @@ const members = handleActions<MembersState, Array<KiiUser>>({
     assign({}, s, {users: Map(a.payload.map(u => [u.getUUID(), u]))}),
 }, {users: Map<UserID, KiiUser>()} /* initial state */)
 
+const ui = handleActions<UIState, any>({
+  "TOGGLE-LEFT-DRAWER": (s: UIState, a: Action<{}>) =>
+    assign({}, s, {leftDrawer: !s.leftDrawer})
+}, {leftDrawer: false})
+
 const error = (s: any = {}, a: Action<Error>) => {
   if (a.type.match(/\.rejected$/)) {
     console.error(a.type, a.payload);
@@ -83,6 +88,7 @@ export const reducer = combineReducers({
   }),
   messages,
   members,
+  ui,
   error,
 })
 

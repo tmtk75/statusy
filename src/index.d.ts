@@ -17,6 +17,10 @@ declare global {
     readonly topic?: KiiTopic,
   }
 
+  type UIState = {
+    readonly leftDrawer: boolean;
+  }
+
   class MQTTState extends MQTTConn {
      readonly retryCount: number;
   }

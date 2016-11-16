@@ -65,3 +65,6 @@ export const selectGroup = createAction<SelectGroupPayload>("SELECT-GROUP", (pay
 });
 
 export const invite = createAction<InvitePayload>("INVITE");
+
+export const toggleLeftDrawer = createAction<{}>("TOGGLE-LEFT-DRAWER");
+

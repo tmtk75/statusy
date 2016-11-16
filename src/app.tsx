@@ -3,7 +3,7 @@ import * as moment from "moment"
 import { remote } from "electron"
 import { Dispatch } from "redux"
 import { Action } from "redux-actions"
-import { FlatButton, TextField, Subheader, Divider,  List, ListItem, Avatar, SelectField, MenuItem, IconButton } from "material-ui"
+import { FlatButton, TextField, Subheader, Divider,  List, ListItem, Avatar, SelectField, MenuItem, IconButton, Drawer } from "material-ui"
 import IconChatBubble from 'material-ui/svg-icons/communication/chat-bubble';
 import IconAccountBox from 'material-ui/svg-icons/action/account-box';
 import { darkBlack } from 'material-ui/styles/colors';
@@ -19,6 +19,7 @@ import {
   loadLatestMessages,
   selectGroup,
   invite,
+  toggleLeftDrawer,
 } from "./action"
 import { KiiUser, KiiPushMessage, KiiGroup } from "kii-sdk"
 
@@ -28,6 +29,7 @@ type AppProps = {
   messages: MessagesState,
   members: MembersState,
   github_token: string,
+  ui: UIState,
   error: {
     rejected: Error,
   },
@@ -332,16 +334,40 @@ class AppStatusBar extends React.Component<AppProps, {}> {
   }
 }
 
+class LeftDrawer extends React.Component<AppProps, {}> {
+  render() {
+    const { dispatch, ui: { leftDrawer } } = this.props;
+    return (
+      <FlatButton
+        label="close"
+        onClick={() => dispatch(toggleLeftDrawer())}
+        />
+    )
+  }
+}
+
+class AppNaviBar extends React.Component<AppProps, {}> {
+  render() {
+    const { dispatch, ui: { leftDrawer } } = this.props;
+    return (
+      <div className="appNaviBar">
+        <IconButton tooltip="Settings" onClick={() => dispatch(toggleLeftDrawer())}>
+          <IconAccountBox />
+        </IconButton>
+        <Drawer open={leftDrawer} className="appLeftDrawer">
+          <LeftDrawer {...this.props}/>
+        </Drawer>
+      </div>
+    )
+  }
+}
+
 export default class App extends React.Component<AppProps, {}> {
   render() {
     return (
       <div>
         <AppStatusBar {...this.props}/>
-        <div className="appNaviBar">
-          <IconButton tooltip="Settings">
-            <IconAccountBox />
-          </IconButton>
-        </div>
+        <AppNaviBar {...this.props}/>
         <div className="appBody">
           <Message {...this.props}/>
           <Members {...this.props}/>
