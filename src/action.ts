@@ -3,7 +3,7 @@ import { KiiUser, KiiGroup, KiiPushMessage } from "kii-sdk"
 
 export const connect = createAction<KiiGroup>("CONNECT");
 
-export const disconnect = createAction<KiiCloudState, void>("DISCONNECT", ({ mqtt: { client } }: KiiCloudState) => {
+export const disconnect = createAction<void>("DISCONNECT", ({ mqtt: { client } }: KiiCloudState) => {
   if (!client) {
     //console.log("no client");
     return
@@ -26,7 +26,7 @@ export const signUp = createAction<SignUpPayload>("SIGN-UP", saveUsername);
 
 export const signIn = createAction<SignInPayload>("SIGN-IN", saveUsername);
 
-export const saveToken = createAction<KiiUser, void>("SAVE-TOKEN", (user: KiiUser) => {
+export const saveToken = createAction<void>("SAVE-TOKEN", (user: KiiUser) => {
   if (user.getAccessToken() === localStorage.getItem("token")) {
     console.debug("the same token exists.");
     return;

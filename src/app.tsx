@@ -3,8 +3,9 @@ import * as moment from "moment"
 import { remote } from "electron"
 import { Dispatch } from "redux"
 import { Action } from "redux-actions"
-import { FlatButton, TextField, Subheader, Divider,  List, ListItem, Avatar, SelectField, MenuItem } from "material-ui"
-import CommunicationChatBubble from 'material-ui/svg-icons/communication/chat-bubble';
+import { FlatButton, TextField, Subheader, Divider,  List, ListItem, Avatar, SelectField, MenuItem, IconButton } from "material-ui"
+import IconChatBubble from 'material-ui/svg-icons/communication/chat-bubble';
+import IconAccountBox from 'material-ui/svg-icons/action/account-box';
 import { darkBlack } from 'material-ui/styles/colors';
 import {
   connect,
@@ -186,11 +187,11 @@ class Members extends React.Component<AppProps, {}> {
     super(props)
   }
   render() {
-    const { dispatch, kiicloud: { profile: { group } }, messages: { pushMessages }, members: { users } } = this.props;
+    const { messages: { pushMessages }, members: { users } } = this.props;
     return (
       <div className="members">
         <List>
-          <Subheader>Recent statuses in {group ? group.getName() : null}</Subheader>
+          {/*<Subheader>Recent statuses in {group ? group.getName() : null}</Subheader>*/}
           {users.toList().map(e =>
             <div
               key={e.getUUID()}
@@ -320,18 +321,37 @@ class Debug extends React.Component<AppProps, {}> {
   }
 }
 
+class AppStatusBar extends React.Component<AppProps, {}> {
+  render() {
+    const { kiicloud: { profile: { group } } } = this.props;
+    return (
+      <div className="appStatusBar">
+        Recent statuses in {group ? group.getName() : null}
+      </div>
+    )
+  }
+}
+
 export default class App extends React.Component<AppProps, {}> {
   render() {
     return (
       <div>
-        <Message {...this.props}/>
-        <Members {...this.props}/>
-        <Login {...this.props}/>
-        <Connect {...this.props}/>
-        <Group {...this.props}/>
-        <Invite {...this.props}/>
-        <hr />
-        <Debug {...this.props}/>
+        <AppStatusBar {...this.props}/>
+        <div className="appNaviBar">
+          <IconButton tooltip="Settings">
+            <IconAccountBox />
+          </IconButton>
+        </div>
+        <div className="appBody">
+          <Message {...this.props}/>
+          <Members {...this.props}/>
+          <Login {...this.props}/>
+          <Connect {...this.props}/>
+          <Group {...this.props}/>
+          <Invite {...this.props}/>
+          <hr />
+          <Debug {...this.props}/>
+        </div>
       </div>
     )
   }

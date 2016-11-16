@@ -6,7 +6,7 @@ import { Map } from "immutable"
 
 const assign = Object.assign;
 
-const profile = handleActions<ProfileState>({
+const profile = handleActions<ProfileState, any>({
   "SIGN-UP.resolved": (s: ProfileState, a: Action<KiiUser>) =>
     assign({}, s, {me: a.payload, group: null}),
 
@@ -29,7 +29,7 @@ const profile = handleActions<ProfileState>({
     assign({}, s, {topic: null}),
 }, {groups: []} /* initial state */)
 
-const mqtt = handleActions<MQTTState>({
+const mqtt = handleActions<MQTTState, any>({
   "CONNECTION-ALIVE": (s: MQTTState, a: Action<{endpoint: KiiMqttEndpoint, client: Paho.MQTT.Client}>) =>
     assign({}, s, a.payload),
 

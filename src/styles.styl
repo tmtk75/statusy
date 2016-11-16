@@ -7,11 +7,17 @@ html
   height: 100%
   width: 100%
   // Roboto is material-ui default
+  //background-color rgba(255, 255, 255, 0.88)
   font-family Roboto, sans-serif
-  background-color rgba(255, 255, 255, 0.88)
+  color #222
+  font-size 14px
+
+body
+  margin 0
+  padding 0
 
 .app
-  color rgba(0, 0, 0, 0.77)
+  //color rgba(0, 0, 0, 0.77)
 
 .members-memberItem
   margin-bottom 2px
@@ -19,4 +25,30 @@ html
 
 .members-modifiedAt
   margin-left 0.5rem
+
+//
+.appStatusBar
+  display flex
+  align-items center
+  justify-content center
+  position fixed
+  width 100%
+  height 22px
+  background-color #222
+  color white
+
+.appNaviBar
+  display flex
+  align-items center
+  position fixed
+  top 22px
+  left 0px
+  width 100%
+  height 44px
+  box-shadow rgba(0, 0, 0, 0.117647) 0px 1px 6px, rgba(0, 0, 0, 0.117647) 0px 1px 4px
+
+.appBody
+  display block
+  position absolute
+  top 22px + 44px
 

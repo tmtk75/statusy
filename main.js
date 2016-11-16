@@ -26,10 +26,12 @@ app.on('ready', () => {
   global.tray = new Tray(path.resolve(__dirname, './assets/tray.png'));
 
   const win = new electron.BrowserWindow({
-    width: 386,
-    height: 640,
+    //width: 386,
+    //height: 640,
+    width: 320,
+    height: 568,
     'node-integration': false,
-    transparent: true,
+    //transparent: true,
     frame: false,
   });
 
