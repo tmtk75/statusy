@@ -46,6 +46,7 @@ app.on('ready', () => {
   loadDevtool(loadDevtool.REACT_DEVELOPER_TOOLS);
 });
 
-app.setPath("appData",  path.join(__dirname, "./.appData"));
-app.setPath("userData", path.join(__dirname, "./.userData"));
+const dataDirSuffix = (process.env["DATA_DIR_SUFFIX"] || "")
+app.setPath("appData",  path.join(__dirname, "./.appData" + dataDirSuffix));
+app.setPath("userData", path.join(__dirname, "./.userData" + dataDirSuffix));
 
