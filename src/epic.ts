@@ -118,21 +118,22 @@ function updateMessage(g: KiiGroup, text: string): Promise<{}> {
   return e.saveAllFields();
 }
 
-function sendMessage(topic: KiiTopic, text: string): Promise<{}> {
+function sendMessage(sender: KiiUser, topic: KiiTopic, text: string): Promise<{}> {
   const m: StatusMessage = {
-    sender: undefined,
+    sender: sender.getUUID(),
+    modifiedAt: new Date().getTime(),
     text,
-    modifiedAt: undefined,
   }
-  const data = {value: JSON.stringify(m)};
+  const data = {value: JSON.stringify({type: "UPDATE-STATUS", payload: m})};
   const msg = new KiiPushMessageBuilder(data).build()
   return topic.sendMessage(msg)
 }
 
 const sendStatusEpic = Epic.fromPromise(
   "SEND-MESSAGE",
-  ({ payload: { group, topic, text } }: Action<SendMessagePayload>) =>
-    updateMessage(group, text).then(_ => sendMessage(topic, text))
+  ({ payload: { group, topic, text } }: Action<SendMessagePayload>, s: Redux.Store<{kiicloud: KiiCloudState}>) =>
+    updateMessage(group, text)
+      .then(_ => sendMessage(s.getState().kiicloud.profile.me, topic, text))
 )
 
 //const messageArrivedEpic = epicFromPromise("MESSAGE-ARRIVED", (a: Action<KiiPushMessage>) =>
@@ -266,6 +267,13 @@ const inviteEpic = combineEpics(
       .mergeMap(_ => Observable.of({type: "INVITE.rejected#user_not_found"})),
 )
 
+const messageArrivedEpic = (a: ActionsObservable<KiiPushMessage>, store: Redux.Store<{}>) =>
+  a.ofType("MESSAGE-ARRIVED")
+    .map(m => JSON.parse(m.payload.value))
+    //.do(m => console.log(m))
+    .filter(a => a.type)
+    .mergeMap(a => Observable.of(a))
+
 export const rootEpic = combineEpics(
   joinEpic,
   sendStatusEpic,
@@ -280,4 +288,5 @@ export const rootEpic = combineEpics(
   localStorageEpic,
   selectGroupEpic,
   inviteEpic,
+  messageArrivedEpic,
 )

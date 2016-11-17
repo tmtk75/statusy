@@ -1,6 +1,6 @@
 import { handleActions, Action } from "redux-actions"
 import { combineReducers } from "redux"
-import { KiiUser, KiiGroup, KiiTopic, KiiMqttEndpoint, KiiObject, KiiPushMessage } from "kii-sdk"
+import { KiiUser, KiiGroup, KiiTopic, KiiMqttEndpoint, KiiObject } from "kii-sdk"
 import * as Paho from "paho"
 import { Map } from "immutable"
 
@@ -46,14 +46,9 @@ const mqtt = handleActions<MQTTState, any>({
     assign({}, s, {retryCount: null}),
 }, {endpoint: null, client: null, retryCount: undefined} /* initial state */)
 
-const messages = handleActions<MessagesState, KiiPushMessage | StatusMessages>({
-  "MESSAGE-ARRIVED":  (s: MessagesState, {payload}: Action<KiiPushMessage>) =>
-    assign({}, s, {
-      pushMessages: s.pushMessages.set(
-        payload.sender,
-        assign({modifiedAt: payload.when}, JSON.parse(payload.value))
-      ),
-    }),
+const messages = handleActions<MessagesState, StatusMessage | StatusMessages>({
+  "UPDATE-STATUS":  (s: MessagesState, {payload}: Action<StatusMessage>) =>
+    assign({}, s, {pushMessages: s.pushMessages.set(payload.sender, payload)}),
 
   "LOAD-LATEST-MESSAGES.resolved": (s: MessagesState, {payload}: Action<StatusMessages>) =>
     assign({}, s, {
