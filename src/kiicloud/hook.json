@@ -3,5 +3,10 @@
     "when": "USER_CREATED",
     "what": "EXECUTE_SERVER_CODE",
     "endpoint": "userCreated"
+  }],
+  "kiicloud://groups": [{
+    "when": "GROUP_MEMBERS_ADDED",
+    "what": "EXECUTE_SERVER_CODE",
+    "endpoint": "groupMembersAdded"
   }]
 }
