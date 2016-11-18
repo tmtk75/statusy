@@ -232,6 +232,10 @@ const selectGroupEpic = (a: ActionsObservable<SelectGroupPayload>, store: Redux.
     .map(_ => store.getState().kiicloud.profile.group)
     .mergeMap(group => reconnectActions(group))
 
+const groupMembersAddedEpic = (a: ActionsObservable<{}>, store: Redux.Store<{}>) =>
+  a.ofType("GROUP-MEMBERS-ADDED")
+    .map(_ => refresh())
+
 const refreshEpic = (a: ActionsObservable<KiiGroup>, store: Redux.Store<{kiicloud: KiiCloudState}>) =>
   a.ofType("REFRESH")
     .map(_ => store.getState().kiicloud)
@@ -289,4 +293,5 @@ export const rootEpic = combineEpics(
   selectGroupEpic,
   inviteEpic,
   messageArrivedEpic,
+  groupMembersAddedEpic,
 )
