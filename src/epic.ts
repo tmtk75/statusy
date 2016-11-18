@@ -136,11 +136,6 @@ const sendStatusEpic = Epic.fromPromise(
       .then(_ => sendMessage(s.getState().kiicloud.profile.me, topic, text))
 )
 
-//const messageArrivedEpic = epicFromPromise("MESSAGE-ARRIVED", (a: Action<KiiPushMessage>) =>
-//  KiiUser.userWithURI(a.payload.senderURI).refresh()
-//    .then(u => u.getUsername())
-//)
-
 const connectEpic = Epic.fromPromise(
   "CONNECT",
   ({ payload }: Action<ConnectPayload>, store: Redux.Store<{kiicloud: KiiCloudState}>) =>
@@ -177,16 +172,6 @@ const connectionLostEpic = (a: ActionsObservable<{}>, store: Redux.Store<{kiiclo
       .mapTo({type: "CONNECT.end-retry"}),
   ).mergeAll()
 
-//function inviteUser(invitee: string): Promise<KiiGroup> {
-//  return KiiUser.findUserByUsername(invitee)
-//    .then(user => [user, KiiGroup.groupWithID("kiicorp")])
-//    .then(([user, group]) => {
-//      (group as KiiGroup).addUser(user as KiiUser);
-//      (group as KiiGroup).save()
-//      return {user, group}
-//    })
-//}
-
 const loadMembers = (g: KiiGroup) =>
   g.getMemberList()
     .then(([group, members]) => Promise.all(members.map(e => e.refresh())))
@@ -215,9 +200,6 @@ const loadMembersEpic = combineEpics(
   Epic.fromPromise("LOAD-MEMBERS", ({payload}: Action<KiiGroup>) => loadMembers(payload)),
 
   Epic.fromPromise("LOAD-LATEST-MESSAGES", ({payload}: Action<KiiGroup>) => loadLatestMessages(payload)),
-
-//  (a: ActionsObservable<KiiGroup>, store: Redux.Store<{}>) =>
-//    a.ofType("LOAD-MEMBERS").map(({type, payload}) => ({type: "LOAD-LATEST-MESSAGES", payload})),
 
   (a: ActionsObservable<KiiGroup>, store: Redux.Store<{}>) =>
     a.ofType("SIGN-IN.resolved", "JOIN.resolved")
@@ -254,19 +236,11 @@ const inviteEpic = combineEpics(
   Epic.fromPromise(
     "INVITE",
     ({ payload: { invitee, group } }: Action<InvitePayload>) =>
-      KiiUser.findUserByUsername(invitee)
-        .then(user => {
-          group.addUser(user);
-          return group.save();
-        })),
-
-  (a: ActionsObservable<{}>, store: Redux.Store<{}>) =>
-    a.ofType("INVITE.resolved")
-      .map(_ => refresh()),
+      Kii.serverCodeEntry("invite").execute({invitee, groupName: group.getName()})
+        .then(_ => _)),
 
   (a: ActionsObservable<{}>, store: Redux.Store<{}>) =>
     a.ofType("INVITE.rejected")
-      //.do(a => console.log("payload:", a.payload.message))
       .filter(a => a.payload.message.match(/USER_NOT_FOUND/))
       .mergeMap(_ => Observable.of({type: "INVITE.rejected#user_not_found"})),
 )
