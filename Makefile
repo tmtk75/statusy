@@ -14,10 +14,10 @@ tarball: statusy-darwin-x64.tar.gz
 statusy-darwin-x64.tar.gz: statusy-darwin-x64
 	tar cvfz statusy-darwin-x64.tar.gz statusy-darwin-x64
 
-statusy-darwin-x64:
+statusy-darwin-x64: ./dist/myicon.icns
 	./node_modules/.bin/electron-packager . statusy \
 		--platform=darwin --arch=x64 \
-		--version 1.3.8 \
+		--version 1.4.7 \
 		--overwrite \
 		--prune \
 		--icon=./dist/myicon.icns \

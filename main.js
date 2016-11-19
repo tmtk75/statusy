@@ -1,7 +1,6 @@
 const path        = require("path");
 const electron    = require('electron');
 const app         = electron.app;
-const loadDevtool = require('electron-load-devtool');
 const Tray        = electron.Tray;
 const defaults    = require("./assets/defaults");
 
@@ -42,8 +41,11 @@ app.on('ready', () => {
   win.webContents.on('did-finish-load', () => {
   });
 
-  loadDevtool(loadDevtool.REDUX_DEVTOOLS);
-  loadDevtool(loadDevtool.REACT_DEVELOPER_TOOLS);
+  if (process.env["DEBUG"]) {
+    const loadDevtool = require('electron-load-devtool');
+    loadDevtool(loadDevtool.REDUX_DEVTOOLS);
+    loadDevtool(loadDevtool.REACT_DEVELOPER_TOOLS);
+  }
 });
 
 const dataDirSuffix = (process.env["DATA_DIR_SUFFIX"] || "")
