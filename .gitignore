@@ -2,6 +2,7 @@
 /.vscode
 /node_modules
 /dist
-/.userData
+/.userData*
 credentials
 .DS_Store
+statusy-*-*
