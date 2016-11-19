@@ -142,9 +142,7 @@ const connectEpic = Epic.fromPromise(
   "CONNECT",
   ({ payload }: Action<ConnectPayload>, store: Redux.Store<{kiicloud: KiiCloudState}>) =>
     getMQTTEndpoint(KiiUser.getCurrentUser())
-      .then(endpoint => getTopic(payload, FIELD_STATUS)
-        .then(topic => connectWS(endpoint, store)
-          .then(_ => ({topic}))))
+      .then(endpoint => connectWS(endpoint, store))
 )
 
 const connectionLostEpic = (a: ActionsObservable<{}>, store: Redux.Store<{kiicloud: KiiCloudState}>) =>
@@ -209,12 +207,13 @@ const loadMembersEpic = combineEpics(
       .mergeMap(({ payload: { groups: [ group ] } }) => reconnectActions(group)),
 )
 
-const reconnectActions = (g: KiiGroup) => Observable.of(connect(g), _loadMembers(g), _loadLatestMessages(g))
+const reconnectActions = (g: KiiGroup) =>
+  Observable.of<Action<void | KiiGroup>>(connect(), _loadMembers(g), _loadLatestMessages(g))
 
 const selectGroupEpic = (a: ActionsObservable<SelectGroupPayload>, store: Redux.Store<{kiicloud: KiiCloudState}>) =>
   a.ofType("SELECT-GROUP")
     .map(_ => store.getState().kiicloud.profile.group)
-    .mergeMap(group => reconnectActions(group))
+    .mergeMap(g => reconnectActions(g))
 
 const groupMembersAddedEpic = (a: ActionsObservable<{}>, store: Redux.Store<{}>) =>
   a.ofType("GROUP-MEMBERS-ADDED")
@@ -231,7 +230,7 @@ const localStorageEpic = combineEpics(
   (a: ActionsObservable<{}>, store: Redux.Store<{}>) =>
     a.ofType("SIGN-UP.resolved", "SIGN-IN.resolved")
       .map(({ payload: { me } }) => me)
-      .mergeMap(user => Observable.of(saveToken(user)))
+      .mergeMap(user => Observable.of(saveToken(user), connect()))
 );
 
 const inviteEpic = combineEpics(

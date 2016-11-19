@@ -91,9 +91,10 @@ class Login extends React.Component<AppProps, LoginState> {
   makeSignInAction(s: LoginState): Action<SignInPayload> {
     const tk = localStorage.getItem("token");
     if (tk) {
-      console.log("sign in with token");
+      console.debug("sign in with token.");
       return signIn({token: tk});
     }
+    console.debug("sign in with username and password.");
     const { username, password } = s;
     return signIn({username, password})
   }
@@ -187,7 +188,11 @@ class Message extends React.Component<AppProps, {status: string}> {
   }
   handleSendMessage(e: React.FormEvent<TextField & FlatButton> | React.KeyboardEvent<{}>) {
     const { dispatch, kiicloud: { profile: { topic, group } } } = this.props;
+    if (!group) {
+      console.debug("group is not found.");
+    }
     if (!topic) {
+      console.debug(`topic is not found for ${group.getName()}`);
       return;
     }
     dispatch(sendMessage({group, topic, text: this.state.status}));
@@ -311,8 +316,8 @@ class Debug extends React.Component<AppProps, {}> {
         <div>error: {rejected ? rejected.message : null}</div>
         <FlatButton
           label="connect"
-          disabled={!!client || !me || !group}
-          onClick={_ => dispatch(connect(group))}
+          disabled={!!client}
+          onClick={_ => dispatch(connect())}
           />
         <FlatButton
           label="load members"
@@ -408,6 +413,7 @@ export default class App extends React.Component<AppProps, {}> {
     const tk = localStorage.getItem("token");
     if (!tk)
       return;
+    console.debug("sign in with token since a save token is found.");
     dispatch(signIn({token: tk}))
   }
 }

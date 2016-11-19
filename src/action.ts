@@ -1,7 +1,7 @@
 import { createAction } from "redux-actions"
 import { KiiUser, KiiGroup, KiiPushMessage } from "kii-sdk"
 
-export const connect = createAction<KiiGroup>("CONNECT");
+export const connect = createAction<void>("CONNECT");
 
 export const disconnect = createAction<void>("DISCONNECT", ({ mqtt: { client } }: KiiCloudState) => {
   if (!client) {
