@@ -14,7 +14,7 @@ const profile = handleActions<ProfileState, any>({
     assign({}, s, {me, group: groups[0], groups}),
 
   "SIGN-OUT": (s: ProfileState, a: Action<{}>) =>
-    assign({}, s, {me: null}),
+    assign({}, s, {me: null, group: null, topic: null}),
 
   "JOIN.resolved": (s: ProfileState, { payload: { me, groups } }: Action<SignInResolvedPayload>) =>
     assign({}, s, {me, group: groups[0], groups}),
