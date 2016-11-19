@@ -34,6 +34,7 @@ declare module "kii-sdk" {
     static groupWithID(id: string): KiiGroup;
     static registerGroupWithID(id: string, name: string, members: Array<KiiUser>): Promise<KiiGroup>;
     refresh(): Promise<KiiGroup>;
+    getID(): string;
     getName(): string;
     listTopics(): Promise<[Array<KiiTopic>, string /*paginationKey*/]>;
     topicWithName(name: string): KiiTopic;

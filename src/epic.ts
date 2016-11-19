@@ -234,7 +234,7 @@ const inviteEpic = combineEpics(
   Epic.fromPromise(
     "INVITE",
     ({ payload: { invitee, group } }: Action<InvitePayload>): Promise<InvitePayload> =>
-      servercode("invite", {invitee, groupName: group.getName()})
+      servercode("invite", {invitee, groupID: group.getID()})
         .then(_ => _)),
 
   (a: ActionsObservable<{}>) =>

@@ -19,8 +19,11 @@ const profile = handleActions<ProfileState, any>({
   "JOIN.resolved": (s: ProfileState, { payload: { me, groups } }: Action<SignInResolvedPayload>) =>
     assign({}, s, {me, group: groups[0], groups}),
 
-  "INVITED.resolved": (s: ProfileState, { payload: { inviter, group } }: Action<InvitedResolvedPayload>) =>
-    assign({}, s, {group, groups: Set(s.groups).add(group).toArray()}),
+  "INVITED.resolved": (s: ProfileState, { payload: { inviter, group } }: Action<InvitedResolvedPayload>) => {
+    const g = Set(s.groups)
+    const b = g.find(e => e.getID() === group.getID())
+    return assign({}, s, {group, groups: (b ? g : g.add(group)).toArray()})
+  },
 
   "SELECT-GROUP": (s: ProfileState, { payload: { group } }: Action<SelectGroupPayload>) =>
     assign({}, s, {group: s.groups.find(g => g == group)}),
