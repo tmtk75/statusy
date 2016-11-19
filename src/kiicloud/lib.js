@@ -28,3 +28,10 @@ function belong(group, user) {
 export function ensureToBelong(admin, groups, user) {
   return Promise.all(groups.map(g => ensureGroup(admin, g, user).then(g => belong(g, user).save())))
 }
+
+export function sendMessage(topic, type, payload) {
+  const m = {type, payload};
+  const data = {value: JSON.stringify(m)};
+  const msg = new KiiPushMessageBuilder(data).build()
+  return topic.sendMessage(msg)
+}

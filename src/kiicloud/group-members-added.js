@@ -1,3 +1,5 @@
+import { sendMessage } from "./lib"
+
 /*
  *
  */
@@ -7,12 +9,9 @@ export function groupMembersAdded(params, ctx, done) {
     .listTopics()
     .then(args => {
       const topics = args[0];
-      return Promise.all(topics.map(t => {
-        const m = {type: "GROUP-MEMBERS-ADDED", payload: {members: params.members}};
-        const data = {value: JSON.stringify(m)};
-        const msg = new KiiPushMessageBuilder(data).build()
-        return t.sendMessage(msg)
-      }));
+      return Promise.all(topics.map(t =>
+        sendMessage(t, "GROUP-MEMBERS-ADDED", {members: params.members})
+      ));
     })
     .then(_ => done(_))
     .catch(err => {

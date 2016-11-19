@@ -1,3 +1,5 @@
+import { sendMessage } from "./lib"
+
 /*
  *
  */
@@ -14,7 +16,12 @@ export function invite(params, ctx, done) {
       const user = args[1];
       const g = admin.groupWithID(params.groupName);
       g.addUser(user);
-      return g.save();
+
+      const topic   = user.topicWithName("notify");
+      const payload = {inviter: ctx.userID, group: params.groupName};
+      const m = sendMessage(topic, "INVITED", payload);
+
+      return Promise.all([g.save(), m]);
     })
     .then(_ => done(params))
     .catch(err => done({error: err.message}));
