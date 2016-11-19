@@ -316,7 +316,7 @@ class Debug extends React.Component<AppProps, {}> {
         <div>error: {rejected ? rejected.message : null}</div>
         <FlatButton
           label="connect"
-          disabled={!!client}
+          disabled={!!client || !me}
           onClick={_ => dispatch(connect())}
           />
         <FlatButton

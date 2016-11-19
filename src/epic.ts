@@ -201,37 +201,22 @@ import {
   removeToken,
 } from "./action"
 
-const loadMembersEpic = combineEpics(
-  connectEpic,
-
+const refreshEpic = combineEpics(
   Epic.fromPromise("LOAD-MEMBERS", ({payload}: Action<KiiGroup>) => loadMembers(payload)),
 
   Epic.fromPromise("LOAD-LATEST-MESSAGES", ({payload}: Action<KiiGroup>) => loadLatestMessages(payload)),
 
-  (a: ActionsObservable<KiiGroup>, store: Redux.Store<{}>) =>
-    a.ofType("SIGN-IN.resolved", "JOIN.resolved")
-      .filter(({ payload: { groups: [ group ] } }) => group)
-      .mergeMap(({ payload: { groups: [ group ] } }) => reconnectActions(group)),
+  (a: ActionsObservable<KiiGroup>) =>
+    a.ofType("SIGN-IN.resolved", "JOIN.resolved", "SELECT-GROUP", "GROUP-MEMBERS-ADDED")
+      .map(_ => refresh()),
+
+  (a: ActionsObservable<KiiGroup>, store: Redux.Store<{kiicloud: KiiCloudState}>) =>
+    a.ofType("REFRESH")
+      .map(_ => store.getState().kiicloud)
+      .map(kiicloud => kiicloud.profile.group)
+      .filter(group => !!group)
+      .mergeMap(g => Observable.of(_loadMembers(g), _loadLatestMessages(g))),
 )
-
-const reconnectActions = (g: KiiGroup) =>
-  Observable.of<Action<void | KiiGroup>>(connect(), _loadMembers(g), _loadLatestMessages(g))
-
-const selectGroupEpic = (a: ActionsObservable<SelectGroupPayload>, store: Redux.Store<{kiicloud: KiiCloudState}>) =>
-  a.ofType("SELECT-GROUP")
-    .map(_ => store.getState().kiicloud.profile.group)
-    .mergeMap(g => reconnectActions(g))
-
-const groupMembersAddedEpic = (a: ActionsObservable<{}>, store: Redux.Store<{}>) =>
-  a.ofType("GROUP-MEMBERS-ADDED")
-    .map(_ => refresh())
-
-const refreshEpic = (a: ActionsObservable<KiiGroup>, store: Redux.Store<{kiicloud: KiiCloudState}>) =>
-  a.ofType("REFRESH")
-    .map(_ => store.getState().kiicloud)
-    .map(kiicloud => kiicloud.profile.group)
-    .filter(group => !!group)
-    .mergeMap(g => Observable.of(_loadMembers(g), _loadLatestMessages(g)))
 
 const localStorageEpic = combineEpics(
   (a: ActionsObservable<{}>, store: Redux.Store<{}>) =>
@@ -268,12 +253,10 @@ export const rootEpic = combineEpics(
     signInEpic,
     signOutEpic,
   ),
+  connectEpic,
   connectionLostEpic,
-  loadMembersEpic,
   refreshEpic,
   localStorageEpic,
-  selectGroupEpic,
   inviteEpic,
   messageArrivedEpic,
-  groupMembersAddedEpic,
 )

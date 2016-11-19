@@ -5,6 +5,7 @@ export function invite(params, ctx, done) {
   if (!ctx.getAccessToken()) {
     return done({error: "not logged in"});
   }
+  //TODO: ensure the current user belongs to the group.
   const admin = ctx.getAppAdminContext();
   admin.findUserByUsername(params.invitee)
     .then(args => {
