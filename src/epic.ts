@@ -38,14 +38,20 @@ function isTokenPayload(payload: SignInPayload): payload is TokenPayload {
   return (<TokenPayload>payload).token !== undefined;
 }
 
-const signInEpic = Epic.fromPromise(
-  "SIGN-IN",
-  ({ payload }: Action<SignInPayload>) =>
-    (isTokenPayload(payload)
-      ? KiiUser.authenticateWithToken(payload.token)
-      : KiiUser.authenticate(payload.username, payload.password))
-      .then(u => u.memberOfGroups())
-      .then(([me, groups]) => ({me, groups}))
+const signInEpic = combineEpics(
+  Epic.fromPromise(
+    "SIGN-IN",
+    ({ payload }: Action<SignInPayload>) =>
+      (isTokenPayload(payload)
+        ? KiiUser.authenticateWithToken(payload.token)
+        : KiiUser.authenticate(payload.username, payload.password))
+        .then(u => u.memberOfGroups())
+        .then(([me, groups]) => ({me, groups}))
+  ),
+
+  (a: ActionsObservable<{}>) =>
+    a.ofType("SIGN-IN.rejected")
+    .map(_ => removeToken())
 )
 
 const signOutEpic = (a: ActionsObservable<{}>, store: Redux.Store<{kiicloud: KiiCloudState}>) =>
@@ -192,6 +198,7 @@ import {
   loadMembers as _loadMembers,
   loadLatestMessages as _loadLatestMessages,
   saveToken,
+  removeToken,
 } from "./action"
 
 const loadMembersEpic = combineEpics(

@@ -36,10 +36,14 @@ export const saveToken = createAction<void>("SAVE-TOKEN", (user: KiiUser) => {
   console.debug("saved a token.");
 });
 
-export const signOut = createAction<void>("SIGN-OUT", () => {
+export const removeToken = createAction<void>("REMOVE-TOKEN", () => {
   localStorage.removeItem("token");
   localStorage.removeItem("token.savedAt");
   console.debug("removed a token.");
+});
+
+export const signOut = createAction<void>("SIGN-OUT", () => {
+  removeToken();
 });
 
 export const join = createAction<{github_token: string}>("JOIN", (payload) => {
