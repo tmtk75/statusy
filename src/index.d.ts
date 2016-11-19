@@ -76,6 +76,17 @@ declare global {
     group: KiiGroup,
   }
 
+  type InvitedPayload = {
+    inviter: string,
+    group: string,
+  }
+
+  type InvitedResolvedPayload = {
+    inviter: string,
+    group: KiiGroup,
+    topics: Array<KiiTopic>,
+  }
+
   class MQTTConn {
      readonly endpoint: KiiMqttEndpoint;
      readonly client: Paho.MQTT.Client;

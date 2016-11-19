@@ -237,10 +237,23 @@ const inviteEpic = combineEpics(
       servercode("invite", {invitee, groupName: group.getName()})
         .then(_ => _)),
 
-  (a: ActionsObservable<{}>, store: Redux.Store<{}>) =>
+  (a: ActionsObservable<{}>) =>
     a.ofType("INVITE.rejected")
       .filter(a => a.payload.message.match(/USER_NOT_FOUND/))
       .mergeMap(_ => Observable.of({type: "INVITE.rejected#user_not_found"})),
+)
+
+const invitedEpic = combineEpics(
+  Epic.fromPromise(
+    "INVITED",
+    ({ payload: { inviter, group } }: Action<InvitedPayload>): Promise<InvitedResolvedPayload> =>
+      KiiGroup.groupWithID(group).refresh()
+        .then(group => {
+          const p = subscribe(KiiUser.getCurrentUser(), [group]);
+          return Promise.all([inviter, group, p]);
+        })
+        .then(([inviter, group, topics]) => ({inviter, group, topics}))
+  ),
 )
 
 const messageArrivedEpic = (a: ActionsObservable<KiiPushMessage>, store: Redux.Store<{}>) =>
@@ -263,5 +276,6 @@ export const rootEpic = combineEpics(
   refreshEpic,
   localStorageEpic,
   inviteEpic,
+  invitedEpic,
   messageArrivedEpic,
 )
