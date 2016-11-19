@@ -187,14 +187,12 @@ class Message extends React.Component<AppProps, {status: string}> {
     )
   }
   handleSendMessage(e: React.FormEvent<TextField & FlatButton> | React.KeyboardEvent<{}>) {
-    const { dispatch, kiicloud: { profile: { topic, group } } } = this.props;
+    const { dispatch, kiicloud: { profile: { group } } } = this.props;
     if (!group) {
       console.debug("group is not found.");
-    }
-    if (!topic) {
-      console.debug(`topic is not found for ${group.getName()}`);
       return;
     }
+    const topic = group.topicWithName("broadcast");
     dispatch(sendMessage({group, topic, text: this.state.status}));
     //this.setState({status: ""});
   }

@@ -38,6 +38,11 @@ declare global {
     readonly groups: Array<KiiGroup>,
   }
 
+  type SubscribeTopicsPayload = {
+    me: KiiUser,
+    groups: Array<KiiGroup>,
+  }
+
   type SendMessagePayload = {
     readonly group: KiiGroup;
     readonly topic: KiiTopic,

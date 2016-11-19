@@ -7,7 +7,7 @@ import {
   Kii, KiiUser, KiiGroup, KiiTopic, KiiPushMessageBuilder, KiiPushMessage, KiiMqttEndpoint, KiiQuery,
 } from "kii-sdk"
 import { connect, disconnect, connectionLost, messageArrived, connectionAlive, refresh } from "./action"
-import { loadMembers, loadLatestMessages, saveToken, removeToken } from "./action"
+import { loadMembers, loadLatestMessages, saveToken, removeToken, subscribeTopics } from "./action"
 
 const LATEST_MESSAGE_BUCKET_NAME = "latest";
 const FIELD_STATUS = "status";
@@ -82,23 +82,34 @@ function join(token: string): Promise<SignInResolvedPayload> {
     .then(([me, groups]) => ({me, groups}))
 }
 
-const joinEpic = Epic.fromPromise(
-  'JOIN',
-  ({ payload }: Action<JoinPayload>) => join(payload.github_token)
+function subscribe(me: KiiUser, groups: Array<KiiGroup>): Promise<Array<KiiTopic>> {
+  return Promise.all(groups.map(group =>
+    group.listTopics()
+      .then(([[topic], _]) => topic ? topic : group.topicWithName("broadcast").save())
+      .then(topic => KiiUser.getCurrentUser().pushSubscription().isSubscribed(topic))
+      .then(([psub, topic, b]) => b ? Promise.resolve([psub, topic]) : psub.subscribe(topic))
+      .then(([sub, topic]) => topic))
+  );
+}
+
+const joinEpic = combineEpics(
+  Epic.fromPromise(
+    'JOIN',
+    ({ payload }: Action<JoinPayload>) => join(payload.github_token)),
+
+  (a: ActionsObservable<SubscribeTopicsPayload>) =>
+    a.ofType('JOIN.resolved')
+      .map(({ payload: { me, groups } }) => subscribeTopics({me, groups})),
+
+  Epic.fromPromise(
+    'SUBSCRIBE-TOPICS',
+    (a: Action<SubscribeTopicsPayload>) => subscribe(a.payload.me, a.payload.groups)),
 )
 
 function getMQTTEndpoint(sender: KiiUser): Promise<KiiMqttEndpoint> {
   const s = sender.pushInstallation();
   return s.installMqtt(false)
     .then(({installationID}) => s.getMqttEndpoint(installationID))
-}
-
-function getTopic(group: KiiGroup, name: string): Promise<KiiTopic> {
-  return group.listTopics()
-    .then(([[topic], _]) => topic ? topic : group.topicWithName(name).save())
-    .then(topic => KiiUser.getCurrentUser().pushSubscription().isSubscribed(topic))
-    .then(([psub, topic, b]) => b ? Promise.resolve([psub, topic]) : psub.subscribe(topic))
-    .then(([sub, topic]) => topic)
 }
 
 function connectWS(ep: KiiMqttEndpoint, store: Redux.Store<{kiicloud: KiiCloudState}>): Promise<Paho.MQTT.Client> {
@@ -236,7 +247,7 @@ const messageArrivedEpic = (a: ActionsObservable<KiiPushMessage>, store: Redux.S
   a.ofType("MESSAGE-ARRIVED")
     .map(m => JSON.parse(m.payload.value))
     //.do(m => console.log(m))
-    .filter(a => a.type)
+    .filter(a => a.type && a.payload)
     .mergeMap(a => Observable.of(a))
 
 export const rootEpic = combineEpics(

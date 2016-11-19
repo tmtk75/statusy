@@ -51,6 +51,8 @@ export const join = createAction<{github_token: string}>("JOIN", (payload) => {
   return payload;
 });
 
+export const subscribeTopics = createAction<SubscribeTopicsPayload>("SUBSCRIBE-TOPICS");
+
 export const sendMessage = createAction<SendMessagePayload>("SEND-MESSAGE");
 
 export const loadLatestMessages = createAction<KiiGroup>("LOAD-LATEST-MESSAGES");

@@ -22,9 +22,6 @@ const profile = handleActions<ProfileState, any>({
   "SELECT-GROUP": (s: ProfileState, { payload: { group } }: Action<SelectGroupPayload>) =>
     assign({}, s, {group: s.groups.find(g => g == group)}),
 
-  "CONNECT.resolved": (s: ProfileState, a: Action<Paho.MQTT.Client>) =>
-    assign({}, s, {client: a.payload}),
-
   "DISCONNECT": (s: ProfileState, a: Action<{}>) =>
     assign({}, s, {topic: null}),
 }, {groups: []} /* initial state */)

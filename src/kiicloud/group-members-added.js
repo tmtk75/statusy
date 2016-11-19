@@ -8,7 +8,7 @@ export function groupMembersAdded(params, ctx, done) {
     .then(args => {
       const topics = args[0];
       return Promise.all(topics.map(t => {
-        const m = {type: "GROUP-MEMBERS-ADDED", members: params.members};
+        const m = {type: "GROUP-MEMBERS-ADDED", payload: {members: params.members}};
         const data = {value: JSON.stringify(m)};
         const msg = new KiiPushMessageBuilder(data).build()
         return t.sendMessage(msg)
