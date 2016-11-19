@@ -7,7 +7,10 @@ import {
   Kii, KiiUser, KiiGroup, KiiTopic, KiiPushMessageBuilder, KiiPushMessage, KiiMqttEndpoint, KiiQuery,
 } from "kii-sdk"
 import { connect, disconnect, connectionLost, messageArrived, connectionAlive, refresh } from "./action"
+import { loadMembers, loadLatestMessages, saveToken, removeToken } from "./action"
 
+const LATEST_MESSAGE_BUCKET_NAME = "latest";
+const FIELD_STATUS = "status";
 Kii.setAccessTokenExpiration(3600 * 24 /* sec */);
 
 namespace Epic {
@@ -178,33 +181,19 @@ const connectionLostEpic = (a: ActionsObservable<{}>, store: Redux.Store<{kiiclo
       .mapTo({type: "CONNECT.end-retry"}),
   ).mergeAll()
 
-const loadMembers = (g: KiiGroup) =>
-  g.getMemberList()
-    .then(([group, members]) => Promise.all(members.map(e => e.refresh())))
-
-const LATEST_MESSAGE_BUCKET_NAME = "latest";
-const FIELD_STATUS = "status";
-
-const loadLatestMessages = (g: KiiGroup): Promise<StatusMessages> =>
-  g.bucketWithName(LATEST_MESSAGE_BUCKET_NAME)
-    .executeQuery(KiiQuery.queryWithClause(null))
-    .then(([_, results]) => results.map(e => ({
-      sender: (e as any)._owner.getUUID(),
-      text: e.get(FIELD_STATUS).text,
-      modifiedAt: e.getModified(),
-    })))
-
-import {
-  loadMembers as _loadMembers,
-  loadLatestMessages as _loadLatestMessages,
-  saveToken,
-  removeToken,
-} from "./action"
-
 const refreshEpic = combineEpics(
-  Epic.fromPromise("LOAD-MEMBERS", ({payload}: Action<KiiGroup>) => loadMembers(payload)),
+  Epic.fromPromise("LOAD-MEMBERS", ({payload}: Action<KiiGroup>): Promise<Array<KiiUser>> =>
+    payload.getMemberList()
+      .then(([group, members]) => Promise.all(members.map(e => e.refresh())))),
 
-  Epic.fromPromise("LOAD-LATEST-MESSAGES", ({payload}: Action<KiiGroup>) => loadLatestMessages(payload)),
+  Epic.fromPromise("LOAD-LATEST-MESSAGES", ({payload}: Action<KiiGroup>): Promise<StatusMessages> =>
+    payload.bucketWithName(LATEST_MESSAGE_BUCKET_NAME)
+      .executeQuery(KiiQuery.queryWithClause(null))
+      .then(([_, results]) => results.map(e => ({
+        sender: (e as any)._owner.getUUID(),
+        text: e.get(FIELD_STATUS).text,
+        modifiedAt: e.getModified(),
+      })))),
 
   (a: ActionsObservable<KiiGroup>) =>
     a.ofType("SIGN-IN.resolved", "JOIN.resolved", "SELECT-GROUP", "GROUP-MEMBERS-ADDED")
@@ -215,7 +204,7 @@ const refreshEpic = combineEpics(
       .map(_ => store.getState().kiicloud)
       .map(kiicloud => kiicloud.profile.group)
       .filter(group => !!group)
-      .mergeMap(g => Observable.of(_loadMembers(g), _loadLatestMessages(g))),
+      .mergeMap(g => Observable.of(loadMembers(g), loadLatestMessages(g))),
 )
 
 const localStorageEpic = combineEpics(
