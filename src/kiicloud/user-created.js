@@ -13,7 +13,7 @@ export function userCreated(params, ctx, done) {
 }
 
 function subscribe(admin, user, name) {
-  return admin.listTopics()
+  const p = admin.listTopics()
     .then(args => {
       const topics = args[0]
       var t;
@@ -33,4 +33,9 @@ function subscribe(admin, user, name) {
       const b     = args[2];
       return b ? Promise.resolve([psub, topic]) : psub.subscribe(topic)
     })
+
+  const t = user.topicWithName("notify").save()
+    .then(topic => user.pushSubscription().subscribe(topic));
+
+  return Promise.all([p, t]);
 }
