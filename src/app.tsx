@@ -56,14 +56,14 @@ class Login extends React.Component<AppProps, LoginState> {
         <TextField
           disabled={!!me}
           floatingLabelText="username"
-          value={this.state.username}
+          value={username}
           onChange={(e: React.FormEvent<TextField>) => this.setState({username: (e.target as any).value})}
           />
         <TextField
           disabled={!!me}
           type="password"
           floatingLabelText="password"
-          value={this.state.password}
+          value={password}
           onChange={(e: React.FormEvent<TextField>) => this.setState({password: (e.target as any).value})}
           />
         <div style={{display:"flex", justifyContent:"center"}}>
@@ -75,7 +75,7 @@ class Login extends React.Component<AppProps, LoginState> {
           <FlatButton
             label="sign in"
             disabled={!!me}
-            onClick={_ => dispatch(signIn({username, password}))}
+            onClick={_ => dispatch(this.makeSignInAction(this.state))}
             />
           </div>
         <div style={{display:"flex", justifyContent:"center"}}>
@@ -87,6 +87,15 @@ class Login extends React.Component<AppProps, LoginState> {
         </div>
       </div>
     )
+  }
+  makeSignInAction(s: LoginState): Action<SignInPayload> {
+    const tk = localStorage.getItem("token");
+    if (tk) {
+      console.log("sign in with token");
+      return signIn({token: tk});
+    }
+    const { username, password } = s;
+    return signIn({username, password})
   }
 }
 
@@ -298,7 +307,7 @@ class Debug extends React.Component<AppProps, {}> {
       <div className="Debug">
         <div>me: {me ? me.getUsername() : null}</div>
         <div>group: {group ? group.getName() : null}</div>
-        <div>connected: {topic ? "connected" : "disconnected"}</div>
+        <div>connected: {client ? "connected" : "disconnected"}</div>
         <div>error: {rejected ? rejected.message : null}</div>
         <FlatButton
           label="connect"

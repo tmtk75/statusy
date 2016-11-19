@@ -24,7 +24,7 @@ function saveUsername(p: SignUpPayload): SignUpPayload {
 
 export const signUp = createAction<SignUpPayload>("SIGN-UP", saveUsername);
 
-export const signIn = createAction<SignInPayload>("SIGN-IN", saveUsername);
+export const signIn = createAction<SignInPayload>("SIGN-IN");
 
 export const saveToken = createAction<void>("SAVE-TOKEN", (user: KiiUser) => {
   if (user.getAccessToken() === localStorage.getItem("token")) {

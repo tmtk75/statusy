@@ -29,7 +29,9 @@ namespace Epic {
 const signUpEpic = Epic.fromPromise(
   "SIGN-UP",
   ({ payload: { username, password } }: Action<SignUpPayload>) =>
-    KiiUser.userWithUsername(username, password).register()
+    KiiUser.userWithUsername(username, password)
+      .register()
+      .then(me => ({me}))
 )
 
 function isTokenPayload(payload: SignInPayload): payload is TokenPayload {
@@ -227,7 +229,7 @@ const refreshEpic = (a: ActionsObservable<KiiGroup>, store: Redux.Store<{kiiclou
 
 const localStorageEpic = combineEpics(
   (a: ActionsObservable<{}>, store: Redux.Store<{}>) =>
-    a.ofType("SIGN-IN.resolved")
+    a.ofType("SIGN-UP.resolved", "SIGN-IN.resolved")
       .map(({ payload: { me } }) => me)
       .mergeMap(user => Observable.of(saveToken(user)))
 );

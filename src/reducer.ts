@@ -7,8 +7,8 @@ import { Map } from "immutable"
 const assign = Object.assign;
 
 const profile = handleActions<ProfileState, any>({
-  "SIGN-UP.resolved": (s: ProfileState, a: Action<KiiUser>) =>
-    assign({}, s, {me: a.payload, group: null}),
+  "SIGN-UP.resolved": (s: ProfileState, { payload: { me } }: Action<{me: KiiUser}>) =>
+    assign({}, s, {me, group: null}),
 
   "SIGN-IN.resolved": (s: ProfileState, { payload: { me, groups } }: Action<SignInResolvedPayload>) =>
     assign({}, s, {me, group: groups[0], groups}),
