@@ -60,8 +60,9 @@ const signInEpic = combineEpics(
 const signOutEpic = (a: ActionsObservable<{}>, store: Redux.Store<{kiicloud: KiiCloudState}>) =>
   a.ofType("SIGN-OUT").map(_ => disconnect(store.getState().kiicloud))
 
-function join(token: string): Promise<SignInResolvedPayload> {
-  return Kii.serverCodeEntry("join").execute({token})
+function servercode(entry: string, args: Object) {
+  return Kii.serverCodeEntry(entry)
+    .execute(args)
     .then(([a, b, r]) => r.getReturnedValue().returnedValue)
     .then(v => {
       if (v.error)
@@ -70,6 +71,10 @@ function join(token: string): Promise<SignInResolvedPayload> {
         throw new Error(v.responseJSON.message)
       return v
     })
+}
+
+function join(token: string): Promise<SignInResolvedPayload> {
+  return servercode("join", {token})
     .then(({ login, groups }) => Promise.all([
       KiiUser.findUserByUsername(login),
       Promise.all(groups.map((g: string) => KiiGroup.groupWithID(g).refresh())),
@@ -217,8 +222,8 @@ const localStorageEpic = combineEpics(
 const inviteEpic = combineEpics(
   Epic.fromPromise(
     "INVITE",
-    ({ payload: { invitee, group } }: Action<InvitePayload>) =>
-      Kii.serverCodeEntry("invite").execute({invitee, groupName: group.getName()})
+    ({ payload: { invitee, group } }: Action<InvitePayload>): Promise<InvitePayload> =>
+      servercode("invite", {invitee, groupName: group.getName()})
         .then(_ => _)),
 
   (a: ActionsObservable<{}>, store: Redux.Store<{}>) =>

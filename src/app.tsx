@@ -56,14 +56,14 @@ class Login extends React.Component<AppProps, LoginState> {
         <TextField
           disabled={!!me}
           floatingLabelText="username"
-          value={username}
+          value={username || ""}
           onChange={(e: React.FormEvent<TextField>) => this.setState({username: (e.target as any).value})}
           />
         <TextField
           disabled={!!me}
           type="password"
           floatingLabelText="password"
-          value={password}
+          value={password || ""}
           onChange={(e: React.FormEvent<TextField>) => this.setState({password: (e.target as any).value})}
           />
         <div style={{display:"flex", justifyContent:"center"}}>
@@ -260,6 +260,7 @@ class MemberItem extends React.Component<{user: KiiUser, message: StatusMessage}
     )
   }
   componentDidMount() {
+    //TODO: stop timer when unmount
     setInterval(() => this.forceUpdate(), 1000 * 5);
   }
 }
