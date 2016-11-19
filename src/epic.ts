@@ -224,7 +224,7 @@ const refreshEpic = combineEpics(
 )
 
 const localStorageEpic = combineEpics(
-  (a: ActionsObservable<{}>, store: Redux.Store<{}>) =>
+  (a: ActionsObservable<{}>) =>
     a.ofType("SIGN-UP.resolved", "SIGN-IN.resolved")
       .map(({ payload: { me } }) => me)
       .mergeMap(user => Observable.of(saveToken(user), connect()))
@@ -256,7 +256,7 @@ const invitedEpic = combineEpics(
   ),
 )
 
-const messageArrivedEpic = (a: ActionsObservable<KiiPushMessage>, store: Redux.Store<{}>) =>
+const messageArrivedEpic = (a: ActionsObservable<KiiPushMessage>) =>
   a.ofType("MESSAGE-ARRIVED")
     .map(m => JSON.parse(m.payload.value))
     //.do(m => console.log(m))
