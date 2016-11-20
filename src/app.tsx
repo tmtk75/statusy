@@ -7,6 +7,8 @@ import { FlatButton, TextField, Subheader, Divider,  List, ListItem, Avatar, Sel
 import IconAccountBox from 'material-ui/svg-icons/action/account-box';
 import IconMenu from 'material-ui/svg-icons/navigation/menu';
 import IconGroup from 'material-ui/svg-icons/social/group';
+import IconGroupAdd from 'material-ui/svg-icons/social/group-add';
+import IconSearch from 'material-ui/svg-icons/action/search';
 import {
   connect,
   disconnect,
@@ -281,7 +283,8 @@ class Invite extends React.Component<AppProps, {invitee: string}> {
     const { kiicloud: { profile: { me, group } } } = this.props;
     const toGroup = group ? ` to ${group.getName()}` : ""
     return (
-      <div>
+      <div className="section">
+        <IconGroupAdd style={{color:"#aaa", marginRight:"0.5rem"}}/>
         <TextField
           disabled={!me || !group}
           hintText={`invite${toGroup}`}
@@ -339,6 +342,19 @@ class Debug extends React.Component<AppProps, {}> {
           disabled={!client}
           label="disconnect"
           onClick={_ => dispatch(disconnect(this.props.kiicloud))}
+          />
+      </div>
+    )
+  }
+}
+
+class Search extends React.Component<AppProps, {}> {
+  render() {
+    return (
+      <div className="section">
+        <IconSearch style={{color:"#aaa", marginRight:"0.5rem"}}/>
+        <TextField
+          hintText="search"
           />
       </div>
     )
@@ -422,6 +438,16 @@ class AppNotif extends React.Component<AppProps, {}> {
   }
 }
 
+class AppFooter extends React.Component<AppProps, {}> {
+  render() {
+    return (
+      <div className="appFooter">
+        Powered by Kii Cloud
+      </div>
+    )
+  }
+}
+
 export default class App extends React.Component<AppProps, {}> {
   render() {
     return (
@@ -432,6 +458,7 @@ export default class App extends React.Component<AppProps, {}> {
           <Message {...this.props}/>
           <Members {...this.props}/>
           <Group {...this.props}/>
+          <Search {...this.props}/>
           <Invite {...this.props}/>
           {!debug ? null :
             <div>
@@ -439,6 +466,7 @@ export default class App extends React.Component<AppProps, {}> {
               <Debug {...this.props}/>
             </div>}
         </div>
+        <AppFooter {...this.props}/>
         <AppNotif {...this.props}/>
       </div>
     )
