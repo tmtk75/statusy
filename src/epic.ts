@@ -250,7 +250,8 @@ const invitedEpic = combineEpics(
       KiiGroup.groupWithID(group).refresh()
         .then(group => {
           const p = subscribe(KiiUser.getCurrentUser(), [group]);
-          return Promise.all([inviter, group, p]);
+          const u = KiiUser.userWithID(inviter).refresh();
+          return Promise.all([u, group, p]);
         })
         .then(([inviter, group, topics]) => ({inviter, group, topics}))
   ),

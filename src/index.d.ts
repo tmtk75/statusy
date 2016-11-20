@@ -1,7 +1,7 @@
 import * as Paho from "paho"
 import { KiiUser, KiiGroup, KiiTopic, KiiMqttEndpoint } from "kii-sdk"
 import { StoreCreator } from "redux"
-import { Map } from "immutable"
+import { Map, List } from "immutable"
 
 declare global {
 
@@ -20,6 +20,7 @@ declare global {
   type UIState = {
     readonly leftDrawer: boolean;
     readonly filterText: string;
+    readonly messages: List<NotifMessage>;
   }
 
   class MQTTState extends MQTTConn {
@@ -83,7 +84,7 @@ declare global {
   }
 
   type InvitedResolvedPayload = {
-    inviter: string,
+    inviter: KiiUser,
     group: KiiGroup,
     topics: Array<KiiTopic>,
   }
@@ -101,6 +102,11 @@ declare global {
     readonly sender: UserID,
     readonly text: string,
     readonly modifiedAt: number,
+  }
+
+  type NotifMessage = {
+    readonly text:  string,
+    readonly timestamp: number,
   }
 
   interface Window {

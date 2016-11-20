@@ -45,6 +45,7 @@ declare module "kii-sdk" {
   }
 
   class KiiUser {
+    static userWithID(id: string): KiiUser;
     static userWithUsername(username: string, password: string): KiiUser;
     static userWithURI(uri: string): KiiUser;
     static authenticateWithToken(token: string): Promise<KiiUser>;

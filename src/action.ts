@@ -79,3 +79,4 @@ export const filterByText = createAction<{}>("FILTER-BY-TEXT", (payload) => {
   return payload;
 });
 
+export const clearMessages = createAction<number /* timestamp */>("CLEAR-MESSAGES");

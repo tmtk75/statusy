@@ -24,6 +24,7 @@ import {
   invite,
   toggleLeftDrawer,
   filterByText,
+  clearMessages,
 } from "./action"
 import { KiiUser, KiiPushMessage, KiiGroup } from "kii-sdk"
 const { debug } = remote.getGlobal("config");
@@ -433,17 +434,31 @@ class LeftDrawer extends React.Component<AppProps, {}> {
 class AppNotif extends React.Component<AppProps, {}> {
   render() {
     const { error: { rejected }, kiicloud: { mqtt } } = this.props;
-    const errors = [
+    const warns = [
       rejected ? rejected.message : null,
       !mqtt.client ? "Disconnected, please sign-in and connect": null,
     ]
+    const { ui: { messages } } = this.props;
     return (
       <div className="appNotif">
-        {errors.filter(e => e).map(e =>
-          <div key={e} className="appNotif-container">{e}</div>
+        {messages.map(e =>
+          <div key={e.text + e.timestamp}
+            className="appNotif-container appNotif-container_notif">{e.text}</div>
+        )}
+        {warns.filter(e => e).map(e =>
+          <div key={e}
+            className="appNotif-container appNotif-container_warn">{e}</div>
         )}
       </div>
     )
+  }
+  componentDidMount() {
+    const f = () => {
+      const { dispatch, ui: { messages } } = this.props;
+      if (messages.size > 0)
+        dispatch(clearMessages(moment.now()));
+    }
+    setInterval(f, 2000);
   }
 }
 

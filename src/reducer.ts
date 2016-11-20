@@ -2,7 +2,8 @@ import { handleActions, Action } from "redux-actions"
 import { combineReducers } from "redux"
 import { KiiUser, KiiGroup, KiiTopic, KiiMqttEndpoint, KiiObject } from "kii-sdk"
 import * as Paho from "paho"
-import { Map, Set } from "immutable"
+import { Map, Set, List } from "immutable"
+import * as moment from "moment"
 
 const assign = Object.assign;
 
@@ -74,7 +75,28 @@ const ui = handleActions<UIState, any>({
 
   "FILTER-BY-TEXT": (s: UIState, { payload }: Action<string>) =>
     assign({}, s, {filterText: payload}),
-}, {leftDrawer: false, filterText: ""})
+
+  "JOIN.resolved": (s: UIState, { payload: { me, groups } }: Action<SignInResolvedPayload>) =>
+    assign({}, s, {
+      messages: s.messages.push({
+        text: `Succeeded joining at ${moment()}`,
+        timestamp: moment.now(),
+      }),
+    }),
+
+  "INVITED.resolved": (s: UIState, { payload: { inviter, group } }: Action<InvitedResolvedPayload>) =>
+    assign({}, s, {
+      messages: s.messages.push({
+        text: `Invited by ${inviter.getUsername()} to ${group.getName()}`,
+        timestamp: moment.now(),
+      }),
+    }),
+
+  "CLEAR-MESSAGES": (s: UIState, { payload }: Action<number>) =>
+    assign({}, s, {
+      messages: s.messages.filter(e => e.timestamp + 3000 > payload),
+    })
+}, {leftDrawer: false, filterText: "", messages: List<NotifMessage>()})
 
 const error = (s: any = {}, a: Action<Error>) => {
   if (a.type.match(/\.rejected$/)) {
