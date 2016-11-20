@@ -9,6 +9,7 @@ import IconMenu from 'material-ui/svg-icons/navigation/menu';
 import IconGroup from 'material-ui/svg-icons/social/group';
 import IconGroupAdd from 'material-ui/svg-icons/social/group-add';
 import IconSearch from 'material-ui/svg-icons/action/search';
+import IconClear from 'material-ui/svg-icons/content/clear';
 import {
   connect,
   disconnect,
@@ -22,6 +23,7 @@ import {
   selectGroup,
   invite,
   toggleLeftDrawer,
+  filterByText,
 } from "./action"
 import { KiiUser, KiiPushMessage, KiiGroup } from "kii-sdk"
 const { debug } = remote.getGlobal("config");
@@ -213,18 +215,20 @@ class Members extends React.Component<AppProps, {}> {
   }
   render() {
     const { messages: { pushMessages }, members: { users } } = this.props;
+    const { ui: { filterText } } = this.props;
     return (
       <div className="members">
         <List>
           {/*<Subheader>Recent statuses in {group ? group.getName() : null}</Subheader>*/}
-          {users.toList().map(e =>
-            <div
-              key={e.getUUID()}
-              className="members-memberItem"
-              >
-              <MemberItem user={e} message={pushMessages.get(e.getUUID())}/>
-            </div>
-          )}
+          {users.toList()
+            .filter(e => !!e.getUsername().match(filterText))
+            .map(e =>
+              <div
+                key={e.getUUID()}
+                className="members-memberItem"
+                >
+                <MemberItem user={e} message={pushMessages.get(e.getUUID())}/>
+              </div>)}
         </List>
       </div>
     )
@@ -288,7 +292,7 @@ class Invite extends React.Component<AppProps, {invitee: string}> {
         <TextField
           disabled={!me || !group}
           hintText={`invite${toGroup}`}
-          fullWidth={true}
+          fullWidth={false}
           value={this.state.invitee}
           onChange={(e: React.FormEvent<TextField>) => this.setState({invitee: (e.target as any).value})}
           onKeyDown={e => e.keyCode === 13 ? this.invite(e) : null}
@@ -348,16 +352,31 @@ class Debug extends React.Component<AppProps, {}> {
   }
 }
 
-class Search extends React.Component<AppProps, {}> {
+class Search extends React.Component<AppProps, {filterText: string}> {
+  constructor(props: AppProps) {
+    super(props);
+    this.state = {
+      filterText: localStorage.getItem("filterText") || "",
+    }
+  }
   render() {
     return (
       <div className="section">
         <IconSearch style={{color:"#aaa", marginRight:"0.5rem"}}/>
         <TextField
-          hintText="search"
+          hintText="filter pattern"
+          value={this.state.filterText}
+          onChange={(e: React.FormEvent<TextField>) =>
+            this.setState({filterText: (e.target as any).value}, this.filter)}
           />
+        <IconButton tooltip="Clear" onClick={() => this.setState({filterText: ""}, this.filter)}>
+          <IconClear />
+        </IconButton>
       </div>
     )
+  }
+  filter() {
+    this.props.dispatch(filterByText(this.state.filterText));
   }
 }
 

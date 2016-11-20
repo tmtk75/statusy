@@ -70,8 +70,11 @@ const members = handleActions<MembersState, Array<KiiUser>>({
 
 const ui = handleActions<UIState, any>({
   "TOGGLE-LEFT-DRAWER": (s: UIState, a: Action<{}>) =>
-    assign({}, s, {leftDrawer: !s.leftDrawer})
-}, {leftDrawer: false})
+    assign({}, s, {leftDrawer: !s.leftDrawer}),
+
+  "FILTER-BY-TEXT": (s: UIState, { payload }: Action<string>) =>
+    assign({}, s, {filterText: payload}),
+}, {leftDrawer: false, filterText: ""})
 
 const error = (s: any = {}, a: Action<Error>) => {
   if (a.type.match(/\.rejected$/)) {

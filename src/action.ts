@@ -74,3 +74,8 @@ export const invite = createAction<InvitePayload>("INVITE");
 
 export const toggleLeftDrawer = createAction<{}>("TOGGLE-LEFT-DRAWER");
 
+export const filterByText = createAction<{}>("FILTER-BY-TEXT", (payload) => {
+  localStorage.setItem("filterText", payload);
+  return payload;
+});
+

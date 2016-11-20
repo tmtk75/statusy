@@ -19,6 +19,7 @@ declare global {
 
   type UIState = {
     readonly leftDrawer: boolean;
+    readonly filterText: string;
   }
 
   class MQTTState extends MQTTConn {
