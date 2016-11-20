@@ -158,7 +158,7 @@ class Group extends React.Component<AppProps, {group: string}> {
     return (
       <div>
         <SelectField
-          floatingLabelText="organization"
+          hintText="organization"
           value={group}
           onChange={(event: any, index: number, g: KiiGroup) =>
             g !== group ? dispatch(selectGroup({group: g, kiicloud})) : null}
@@ -183,7 +183,7 @@ class Message extends React.Component<AppProps, {status: string}> {
       <div>
         <TextField
           disabled={!me || !group}
-          floatingLabelText="status"
+          hintText="status"
           fullWidth={true}
           errorText={!!this.state.status && !client ? "not connected" : null}
           value={this.state.status}
@@ -284,7 +284,7 @@ class Invite extends React.Component<AppProps, {invitee: string}> {
       <div>
         <TextField
           disabled={!me || !group}
-          floatingLabelText={`invite${toGroup}`}
+          hintText={`invite${toGroup}`}
           fullWidth={true}
           value={this.state.invitee}
           onChange={(e: React.FormEvent<TextField>) => this.setState({invitee: (e.target as any).value})}
