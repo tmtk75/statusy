@@ -293,7 +293,9 @@ class Invite extends React.Component<AppProps, {invitee: string}> {
   }
   invite(e: React.KeyboardEvent<{}>) {
     const { dispatch, kiicloud: { profile: { group } } } = this.props;
-    dispatch(invite({invitee: this.state.invitee, group}));
+    if (this.state.invitee) {
+      dispatch(invite({invitee: this.state.invitee, group}));
+    }
   }
 }
 
