@@ -258,7 +258,7 @@ class MemberItem extends React.Component<{user: KiiUser, message: StatusMessage}
         />
     )
   }
-  _id: number
+  _id: any
   componentDidMount() {
     this._id = setInterval(() => this.forceUpdate(), 1000 * 5);
   }

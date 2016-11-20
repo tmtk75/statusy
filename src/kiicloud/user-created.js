@@ -1,3 +1,5 @@
+import { sendMessage } from "./lib"
+
 /*
  *
  */
@@ -5,6 +7,11 @@ export function userCreated(params, ctx, done) {
   const admin = ctx.getAppAdminContext();
   admin.userWithID(params.userID).refresh()
     .then(user => subscribe(admin, user, "broadcast"))
+    .then(args => {
+      const user  = args[0];
+      const topic = args[1];
+      return sendMessage(topic, "USER-SIGNED-IN", {user: user.getUsername()})
+    })
     .then(_ => done())
     .catch(err => {
       console.error(err.message);
@@ -37,5 +44,5 @@ function subscribe(admin, user, name) {
   const t = user.topicWithName("notify").save()
     .then(topic => user.pushSubscription().subscribe(topic));
 
-  return Promise.all([p, t]);
+  return Promise.all([user, p, t]);
 }
