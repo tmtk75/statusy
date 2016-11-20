@@ -9,8 +9,8 @@ export function userCreated(params, ctx, done) {
     .then(user => subscribe(admin, user, "broadcast"))
     .then(args => {
       const user  = args[0];
-      const topic = args[1];
-      return sendMessage(topic, "USER-SIGNED-IN", {user: user.getUsername()})
+      //const topic = args[1][1];  // NOTE: 401 if I use this. Why?
+      return sendMessage(admin.topicWithName("broadcast"), "USER-SIGNED-IN", {username: user.getUsername()})
     })
     .then(_ => done())
     .catch(err => {

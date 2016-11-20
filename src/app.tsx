@@ -458,7 +458,7 @@ class AppNotif extends React.Component<AppProps, {}> {
       if (messages.size > 0)
         dispatch(clearMessages(moment.now()));
     }
-    setInterval(f, 2000);
+    setInterval(f, 1000 * 2);
   }
 }
 

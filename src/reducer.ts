@@ -92,9 +92,17 @@ const ui = handleActions<UIState, any>({
       }),
     }),
 
+  "USER-SIGNED-IN": (s: UIState, { payload: { username } }: Action<{username: string}>) =>
+    assign({}, s, {
+      messages: s.messages.push({
+        text: `${username} signed in`,
+        timestamp: moment.now(),
+      }),
+    }),
+
   "CLEAR-MESSAGES": (s: UIState, { payload }: Action<number>) =>
     assign({}, s, {
-      messages: s.messages.filter(e => e.timestamp + 3000 > payload),
+      messages: s.messages.filter(e => e.timestamp + 1000 * 3 > payload),
     })
 }, {leftDrawer: false, filterText: "", messages: List<NotifMessage>()})
 
