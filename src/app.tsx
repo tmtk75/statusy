@@ -238,29 +238,16 @@ class Members extends React.Component<AppProps, {}> {
 class MemberItem extends React.Component<{user: KiiUser, message: StatusMessage}, {}> {
   render() {
     const { user, message } = this.props;
-
-    if (!user || !message) {
-      // TODO: reducer should provide default values
-      return (
-        <ListItem
-          disabled={true}
-          leftAvatar={<Avatar src={user.get("avatar_url")} />}
-          primaryText={"No status"}
-          secondaryText={
-            <p>
-              <span>{user.getUsername()}</span>
-            </p>
-          }
-          />
-      )
+    const msg = message ? message : {
+      modifiedAt: moment.now(),
+      text: "no message yet",
     }
-
-    const t = moment.duration(moment.now() - message.modifiedAt)
+    const t = moment.duration(moment.now() - msg.modifiedAt)
     return (
       <ListItem
         disabled={true}
         leftAvatar={<Avatar src={user.get("avatar_url")} />}
-        primaryText={message.text}
+        primaryText={msg.text}
         secondaryText={
           <p>
             <span>{user.getUsername()}</span>
@@ -270,9 +257,12 @@ class MemberItem extends React.Component<{user: KiiUser, message: StatusMessage}
         />
     )
   }
+  _id: number
   componentDidMount() {
-    //TODO: stop timer when unmount
-    setInterval(() => this.forceUpdate(), 1000 * 5);
+    this._id = setInterval(() => this.forceUpdate(), 1000 * 5);
+  }
+  componentWillUnmount() {
+    clearInterval(this._id);
   }
 }
 
