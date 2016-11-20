@@ -12,7 +12,8 @@ global.config = {
     appID:  process.env["KII_APP_ID"] || defaults.app_id,
     appKey: process.env["KII_APP_KEY"] || defaults.app_key,
     apiEndpoint: process.env["KII_API_ENDPOINT"] || defaults.api_endpoint,
-  }
+  },
+  debug: process.env["DEBUG"],
 };
 
 app.on('window-all-closed', () => {
@@ -41,7 +42,7 @@ app.on('ready', () => {
   win.webContents.on('did-finish-load', () => {
   });
 
-  if (process.env["DEBUG"]) {
+  if (global.config.debug) {
     const loadDevtool = require('electron-load-devtool');
     loadDevtool(loadDevtool.REDUX_DEVTOOLS);
     loadDevtool(loadDevtool.REACT_DEVELOPER_TOOLS);

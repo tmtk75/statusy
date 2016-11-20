@@ -4,9 +4,9 @@ import { remote } from "electron"
 import { Dispatch } from "redux"
 import { Action } from "redux-actions"
 import { FlatButton, TextField, Subheader, Divider,  List, ListItem, Avatar, SelectField, MenuItem, IconButton, Drawer } from "material-ui"
-import IconChatBubble from 'material-ui/svg-icons/communication/chat-bubble';
 import IconAccountBox from 'material-ui/svg-icons/action/account-box';
-import { darkBlack } from 'material-ui/styles/colors';
+import IconMenu from 'material-ui/svg-icons/navigation/menu';
+import IconGroup from 'material-ui/svg-icons/social/group';
 import {
   connect,
   disconnect,
@@ -22,6 +22,7 @@ import {
   toggleLeftDrawer,
 } from "./action"
 import { KiiUser, KiiPushMessage, KiiGroup } from "kii-sdk"
+const { debug } = remote.getGlobal("config");
 
 type AppProps = {
   dispatch: Dispatch<Action<any>>,
@@ -53,16 +54,19 @@ class Login extends React.Component<AppProps, LoginState> {
     const { username, password } = this.state;
     return (
       <div>
+        <div className="section">
+          <IconAccountBox /> <span className="section-text">Account</span>
+        </div>
         <TextField
           disabled={!!me}
-          floatingLabelText="username"
+          hintText="username"
           value={username || ""}
           onChange={(e: React.FormEvent<TextField>) => this.setState({username: (e.target as any).value})}
           />
         <TextField
           disabled={!!me}
           type="password"
-          floatingLabelText="password"
+          hintText="password"
           value={password || ""}
           onChange={(e: React.FormEvent<TextField>) => this.setState({password: (e.target as any).value})}
           />
@@ -114,8 +118,11 @@ class Connect extends React.Component<AppProps, {github_token: string}> {
     const { dispatch, kiicloud: { profile: { me, group, groups }, mqtt: { client } } } = this.props;
     return (
       <div>
+        <div className="section">
+          <IconGroup /><span className="section-text">Join by yourself</span>
+        </div>
         <TextField
-          floatingLabelText="github_token"
+          hintText="github_token"
           fullWidth={true}
           value={this.state.github_token}
           onChange={(e: React.FormEvent<TextField>) => this.setState({github_token: (e.target as any).value})}
@@ -134,7 +141,7 @@ class Connect extends React.Component<AppProps, {github_token: string}> {
         }
         {
           this.state.github_token ? null :
-          <span> Generate a token at <a href="#" onClick={() => remote.shell.openExternal('https://github.com/settings/tokens')}>here</a> if you don't have it.</span>
+          <span>You can ask someone else to invite you, or generate a token at <a href="#" onClick={() => remote.shell.openExternal('https://github.com/settings/tokens')}>here</a> if you don't have it.</span>
         }
         </div>
       </div>
@@ -352,12 +359,18 @@ class AppStatusBar extends React.Component<AppProps, {}> {
 class AppNaviBar extends React.Component<AppProps, {}> {
   render() {
     const { dispatch, ui: { leftDrawer } } = this.props;
+    const { kiicloud: { profile: { me } } } = this.props;
     return (
       <div className="appNaviBar">
-        <IconButton tooltip="Settings" onClick={() => dispatch(toggleLeftDrawer())}>
-          <IconAccountBox />
-        </IconButton>
-        <Drawer open={leftDrawer} className="appLeftDrawer">
+        <div style={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
+          <IconButton tooltip="Settings" onClick={() => dispatch(toggleLeftDrawer())}>
+            <IconMenu />
+          </IconButton>
+          <div style={{marginRight:"12px"}}>
+            { !me ? null : me.getUsername() }
+          </div>
+        </div>
+        <Drawer open={leftDrawer}>
           <LeftDrawer {...this.props}/>
         </Drawer>
       </div>
@@ -370,21 +383,40 @@ class LeftDrawer extends React.Component<AppProps, {}> {
     const { dispatch, ui: { leftDrawer } } = this.props;
     const { kiicloud: { profile: { me } } } = this.props;
     return (
-      <div>
+      <div className="appLeftDrawer">
         <div className="appLeftDrawer-header">
           <img src={me ? me.get("avatar_url") : null} width="40px" style={{margin:"2px", borderRadius:"2px"}}/>
           <span style={{marginLeft:"0.5rem"}}>{me ? me.getUsername() : null}</span>
         </div>
         <div className="appLeftDrawer-body">
-          <Login {...this.props}/>
-          <Connect {...this.props}/>
           <div style={{display:"flex", justifyContent:"center"}}>
             <FlatButton
               label="back"
               onClick={() => dispatch(toggleLeftDrawer())}
               />
           </div>
+          <hr/>
+          <Login {...this.props}/>
+          <hr/>
+          <Connect {...this.props}/>
         </div>
+      </div>
+    )
+  }
+}
+
+class AppNotif extends React.Component<AppProps, {}> {
+  render() {
+    const { error: { rejected }, kiicloud: { mqtt } } = this.props;
+    const errors = [
+      rejected ? rejected.message : null,
+      !mqtt.client ? "Disconnected, please sign-in and connect": null,
+    ]
+    return (
+      <div className="appNotif">
+        {errors.filter(e => e).map(e =>
+          <div key={e} className="appNotif-container">{e}</div>
+        )}
       </div>
     )
   }
@@ -401,9 +433,13 @@ export default class App extends React.Component<AppProps, {}> {
           <Members {...this.props}/>
           <Group {...this.props}/>
           <Invite {...this.props}/>
-          <hr />
-          <Debug {...this.props}/>
+          {!debug ? null :
+            <div>
+              <hr />
+              <Debug {...this.props}/>
+            </div>}
         </div>
+        <AppNotif {...this.props}/>
       </div>
     )
   }
