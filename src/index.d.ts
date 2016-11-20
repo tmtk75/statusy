@@ -107,3 +107,11 @@ declare global {
   }
 
 }
+
+declare module "kii-sdk" {
+
+  interface KiiGroup {
+    equals(a: KiiGroup): boolean;
+  }
+
+}
