@@ -69,6 +69,9 @@ const members = handleActions<MembersState, Array<KiiUser>>({
     assign({}, s, {users: Map(a.payload.map(u => [u.getUUID(), u]))}),
 }, {users: Map<UserID, KiiUser>()} /* initial state */)
 
+const nextMsgs = (messages: List<NotifMessage>, text: string) =>
+  ({messages: messages.push({text, timestamp: moment.now()})})
+
 const ui = handleActions<UIState, any>({
   "TOGGLE-LEFT-DRAWER": (s: UIState, a: Action<{}>) =>
     assign({}, s, {leftDrawer: !s.leftDrawer}),
@@ -77,28 +80,13 @@ const ui = handleActions<UIState, any>({
     assign({}, s, {filterText: payload}),
 
   "JOIN.resolved": (s: UIState, { payload: { me, groups } }: Action<SignInResolvedPayload>) =>
-    assign({}, s, {
-      messages: s.messages.push({
-        text: `Succeeded joining at ${moment()}`,
-        timestamp: moment.now(),
-      }),
-    }),
+    assign({}, s, nextMsgs(s.messages, `Succeeded joining at ${moment()}`)),
 
   "INVITED.resolved": (s: UIState, { payload: { inviter, group } }: Action<InvitedResolvedPayload>) =>
-    assign({}, s, {
-      messages: s.messages.push({
-        text: `Invited by ${inviter.getUsername()} to ${group.getName()}`,
-        timestamp: moment.now(),
-      }),
-    }),
+    assign({}, s, nextMsgs(s.messages, `Invited by ${inviter.getUsername()} to ${group.getName()}`)),
 
   "USER-SIGNED-IN": (s: UIState, { payload: { username } }: Action<{username: string}>) =>
-    assign({}, s, {
-      messages: s.messages.push({
-        text: `${username} signed in`,
-        timestamp: moment.now(),
-      }),
-    }),
+    assign({}, s, nextMsgs(s.messages, `${username} signed in`)),
 
   "CLEAR-MESSAGES": (s: UIState, { payload }: Action<number>) =>
     assign({}, s, {
