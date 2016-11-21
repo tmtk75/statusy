@@ -78,12 +78,12 @@ class Login extends React.Component<AppProps, LoginState> {
         <div style={{display:"flex", justifyContent:"center"}}>
           <FlatButton
             label="sign up"
-            disabled={!!me}
+            disabled={!!me || !(username && password)}
             onClick={_ => dispatch(signUp({username, password}))}
             />
           <FlatButton
             label="sign in"
-            disabled={!!me}
+            disabled={!!me || !(username && password)}
             onClick={_ => dispatch(this.makeSignInAction(this.state))}
             />
           </div>
