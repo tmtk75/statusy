@@ -72,7 +72,9 @@ export const selectGroup = createAction<SelectGroupPayload>("SELECT-GROUP", (pay
 
 export const invite = createAction<InvitePayload>("INVITE");
 
-export const toggleLeftDrawer = createAction<{}>("TOGGLE-LEFT-DRAWER");
+export const openLeftDrawer = createAction<{}>("OPEN-LEFT-DRAWER");
+
+export const closeLeftDrawer = createAction<{}>("CLOSE-LEFT-DRAWER");
 
 export const filterByText = createAction<{}>("FILTER-BY-TEXT", (payload) => {
   localStorage.setItem("filterText", payload);

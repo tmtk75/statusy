@@ -73,8 +73,11 @@ const nextMsgs = (messages: List<NotifMessage>, text: string) =>
   ({messages: messages.push({text, timestamp: moment.now()})})
 
 const ui = handleActions<UIState, any>({
-  "TOGGLE-LEFT-DRAWER": (s: UIState, a: Action<{}>) =>
-    assign({}, s, {leftDrawer: !s.leftDrawer}),
+  "OPEN-LEFT-DRAWER": (s: UIState, a: Action<{}>) =>
+    assign({}, s, {leftDrawer: true}),
+
+  "CLOSE-LEFT-DRAWER": (s: UIState, a: Action<{}>) =>
+    assign({}, s, {leftDrawer: false}),
 
   "FILTER-BY-TEXT": (s: UIState, { payload }: Action<string>) =>
     assign({}, s, {filterText: payload}),

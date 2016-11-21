@@ -22,7 +22,8 @@ import {
   loadLatestMessages,
   selectGroup,
   invite,
-  toggleLeftDrawer,
+  openLeftDrawer,
+  closeLeftDrawer,
   filterByText,
   clearMessages,
 } from "./action"
@@ -52,6 +53,11 @@ class Login extends React.Component<AppProps, LoginState> {
     this.state = {
       username: localStorage.getItem("username"),
       password: localStorage.getItem("password"),
+    }
+  }
+  componentDidMount() {
+    if (!(this.state.username && this.state.password)) {
+      this.props.dispatch(openLeftDrawer());
     }
   }
   render() {
@@ -391,7 +397,7 @@ class AppNaviBar extends React.Component<AppProps, {}> {
     return (
       <div className="appNaviBar">
         <div style={{display:"flex", alignItems:"center", justifyContent:"space-between"}}>
-          <IconButton tooltip="Settings" onClick={() => dispatch(toggleLeftDrawer())}>
+          <IconButton tooltip="Settings" onClick={() => dispatch(openLeftDrawer())}>
             <IconMenu />
           </IconButton>
           <div style={{marginRight:"12px"}}>
@@ -420,7 +426,7 @@ class LeftDrawer extends React.Component<AppProps, {}> {
           <div style={{display:"flex", justifyContent:"center"}}>
             <FlatButton
               label="back"
-              onClick={() => dispatch(toggleLeftDrawer())}
+              onClick={() => dispatch(closeLeftDrawer())}
               />
           </div>
           <hr/>

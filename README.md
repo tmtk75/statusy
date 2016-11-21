@@ -5,5 +5,5 @@ An example application using react, react-observable, material-ui, typescript, w
 ```
 $ npm install
 $ npm run build
-$ npm start
+$ DEBUG=1 npm start
 ```
