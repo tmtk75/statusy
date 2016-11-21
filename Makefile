@@ -24,4 +24,5 @@ statusy-darwin-x64: ./dist/myicon.icns
 		--ignore src \
 		--ignore .userData \
 		--ignore .appData \
+		--ignore statusy-darwin-x64.tar.gz \
 		--ignore credentials
