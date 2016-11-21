@@ -4,6 +4,8 @@ const app         = electron.app;
 const Tray        = electron.Tray;
 const defaults    = require("./assets/defaults");
 
+const debug = process.env["DEBUG"];
+
 global.config = {
   github: {
     token: process.env["GITHUB_TOKEN"],
@@ -13,7 +15,7 @@ global.config = {
     appKey: process.env["KII_APP_KEY"] || defaults.app_key,
     apiEndpoint: process.env["KII_API_ENDPOINT"] || defaults.api_endpoint,
   },
-  debug: process.env["DEBUG"],
+  debug,
 };
 
 app.on('window-all-closed', () => {
@@ -49,7 +51,11 @@ app.on('ready', () => {
   }
 });
 
-const dataDirSuffix = (process.env["DATA_DIR_SUFFIX"] || "")
-app.setPath("appData",  path.join(__dirname, "./.appData" + dataDirSuffix));
-app.setPath("userData", path.join(__dirname, "./.userData" + dataDirSuffix));
+if (debug) {
+  const dataDirSuffix = (process.env["DATA_DIR_SUFFIX"] || "")
+  app.setPath("appData",  path.join(__dirname, "./.appData" + dataDirSuffix));
+  app.setPath("userData", path.join(__dirname, "./.userData" + dataDirSuffix));
+}
 
+console.log("appData path:", app.getPath("appData"));
+console.log("userData path:", app.getPath("userData"));
