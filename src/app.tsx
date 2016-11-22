@@ -130,7 +130,7 @@ class Connect extends React.Component<AppProps, {github_token: string}> {
     return (
       <div>
         <div className="section">
-          <IconGroup /><span className="section-text">Join by yourself</span>
+          <IconGroup /><span className="section-text">Link to your github account</span>
         </div>
         <TextField
           hintText="github_token"
