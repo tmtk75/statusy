@@ -1,8 +1,6 @@
-const path        = require("path");
-const electron    = require('electron');
-const app         = electron.app;
-const Tray        = electron.Tray;
-const defaults    = require("./assets/defaults");
+const path     = require("path");
+const defaults = require("./assets/defaults");
+const { app, BrowserWindow, Tray, Menu } = require('electron');
 
 const debug = process.env["DEBUG"];
 
@@ -27,7 +25,7 @@ app.on('window-all-closed', () => {
 app.on('ready', () => {
   global.tray = new Tray(path.resolve(__dirname, './assets/tray.png'));
 
-  const win = new electron.BrowserWindow({
+  const win = new BrowserWindow({
     //width: 386,
     //height: 640,
     width: 320,
@@ -39,6 +37,25 @@ app.on('ready', () => {
   });
 
   win.loadURL(`file://${__dirname}/index.html`);
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate([{
+    //label: "Application",
+    submenu: [
+      //{ label: "About Application", selector: "orderFrontStandardAboutPanel:" },
+      //{ type: "separator" },
+      { label: "Quit", accelerator: "Command+Q", click: () => app.quit()}
+    ]}, {
+    label: "Edit",
+    submenu: [
+      { label: "Undo", accelerator: "CmdOrCtrl+Z", selector: "undo:" },
+      { label: "Redo", accelerator: "Shift+CmdOrCtrl+Z", selector: "redo:" },
+      { type: "separator" },
+      { label: "Cut", accelerator: "CmdOrCtrl+X", selector: "cut:" },
+      { label: "Copy", accelerator: "CmdOrCtrl+C", selector: "copy:" },
+      { label: "Paste", accelerator: "CmdOrCtrl+V", selector: "paste:" },
+      { label: "Select All", accelerator: "CmdOrCtrl+A", selector: "selectAll:" }
+    ]}
+  ]))
 
   //win.webContents.openDevTools();
   win.webContents.on('did-finish-load', () => {
