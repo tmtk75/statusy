@@ -46,7 +46,7 @@ export const signOut = createAction<void>("SIGN-OUT", () => {
   removeToken();
 });
 
-export const join = createAction<{github_token: string}>("JOIN", (payload) => {
+export const link = createAction<{github_token: string}>("LINK", (payload) => {
   localStorage.setItem("github_token", payload.github_token);
   return payload;
 });

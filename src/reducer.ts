@@ -21,7 +21,7 @@ const profile = handleActions<ProfileState, any>({
   "SIGN-OUT": (s: ProfileState, a: Action<{}>) =>
     assign({}, s, {me: null, group: null, topic: null}),
 
-  "JOIN.resolved": (s: ProfileState, { payload: { me, groups } }: Action<SignInResolvedPayload>) =>
+  "LINK.resolved": (s: ProfileState, { payload: { me, groups } }: Action<SignInResolvedPayload>) =>
     assign({}, s, {me, group: groups[0], groups}),
 
   "INVITED.resolved": (s: ProfileState, { payload: { inviter, group } }: Action<InvitedResolvedPayload>) =>
@@ -82,8 +82,8 @@ const ui = handleActions<UIState, any>({
   "FILTER-BY-TEXT": (s: UIState, { payload }: Action<string>) =>
     assign({}, s, {filterText: payload}),
 
-  "JOIN.resolved": (s: UIState, { payload: { me, groups } }: Action<SignInResolvedPayload>) =>
-    assign({}, s, nextMsgs(s.messages, `Succeeded joining at ${moment()}`)),
+  "LINK.resolved": (s: UIState, { payload: { me, groups } }: Action<SignInResolvedPayload>) =>
+    assign({}, s, nextMsgs(s.messages, `Succeeded to link at ${moment()}`)),
 
   "INVITED.resolved": (s: UIState, { payload: { inviter, group } }: Action<InvitedResolvedPayload>) =>
     assign({}, s, nextMsgs(s.messages, `Invited by ${inviter.getUsername()} to ${group.getName()}`)),

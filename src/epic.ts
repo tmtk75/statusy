@@ -73,8 +73,8 @@ function servercode(entry: string, args: Object) {
     })
 }
 
-function join(token: string): Promise<SignInResolvedPayload> {
-  return servercode("join", {token})
+function link(token: string): Promise<SignInResolvedPayload> {
+  return servercode("link", {token})
     .then(({ login, groups }) => Promise.all([
       KiiUser.findUserByUsername(login),
       Promise.all(groups.map((g: string) => KiiGroup.groupWithID(g).refresh())),
@@ -92,13 +92,13 @@ function subscribe(me: KiiUser, groups: Array<KiiGroup>): Promise<Array<KiiTopic
   );
 }
 
-const joinEpic = combineEpics(
+const linkEpic = combineEpics(
   Epic.fromPromise(
-    'JOIN',
-    ({ payload }: Action<JoinPayload>) => join(payload.github_token)),
+    'LINK',
+    ({ payload }: Action<LinkPayload>) => link(payload.github_token)),
 
   (a: ActionsObservable<SubscribeTopicsPayload>) =>
-    a.ofType('JOIN.resolved')
+    a.ofType('LINK.resolved')
       .map(({ payload: { me, groups } }) => subscribeTopics({me, groups})),
 
   Epic.fromPromise(
@@ -212,7 +212,7 @@ const refreshEpic = combineEpics(
       })))),
 
   (a: ActionsObservable<KiiGroup>) =>
-    a.ofType("SIGN-IN.resolved", "JOIN.resolved", "SELECT-GROUP", "GROUP-MEMBERS-ADDED")
+    a.ofType("SIGN-IN.resolved", "LINK.resolved", "SELECT-GROUP", "GROUP-MEMBERS-ADDED")
       .map(_ => refresh()),
 
   (a: ActionsObservable<KiiGroup>, store: Redux.Store<{kiicloud: KiiCloudState}>) =>
@@ -265,7 +265,7 @@ const messageArrivedEpic = (a: ActionsObservable<KiiPushMessage>) =>
     .mergeMap(a => Observable.of(a))
 
 export const rootEpic = combineEpics(
-  joinEpic,
+  linkEpic,
   sendStatusEpic,
   combineEpics(
     signUpEpic,

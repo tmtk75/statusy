@@ -64,7 +64,7 @@ declare global {
 
   type SignInPayload = SignUpPayload | TokenPayload;
 
-  type JoinPayload = {
+  type LinkPayload = {
     readonly github_token: string,
   }
 

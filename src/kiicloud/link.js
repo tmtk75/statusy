@@ -4,7 +4,7 @@ import {
   groups,
 } from "./lib";
 
-export function join(params, ctx, done) {
+export function link(params, ctx, done) {
   const tk = { authorization: "token " + params.token }
   const ghUser = get(tk, "https://api.github.com/user")
   
