@@ -85,6 +85,9 @@ const ui = handleActions<UIState, any>({
   "LINK.resolved": (s: UIState, { payload: { me, groups } }: Action<SignInResolvedPayload>) =>
     assign({}, s, nextMsgs(s.messages, `Succeeded to link at ${moment()}`)),
 
+  "CONNECTION-ALIVE": (s: UIState) =>
+    assign({}, s, nextMsgs(s.messages, `Connection alive`)),
+
   "INVITED.resolved": (s: UIState, { payload: { inviter, group } }: Action<InvitedResolvedPayload>) =>
     assign({}, s, nextMsgs(s.messages, `Invited by ${inviter.getUsername()} to ${group.getName()}`)),
 
