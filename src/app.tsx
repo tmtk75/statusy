@@ -31,6 +31,9 @@ import {
 import { KiiUser, KiiPushMessage, KiiGroup } from "kii-sdk"
 const { debug, version } = remote.getGlobal("config");
 
+const enterTimeout = 500;
+const leaveTimeout = 300;
+
 type AppProps = {
   dispatch: Dispatch<Action<any>>,
   kiicloud: KiiCloudState,
@@ -245,7 +248,10 @@ class Members extends React.Component<AppProps, {}> {
       <div className="members">
         <List>
           {/*<Subheader>Recent statuses in {group ? group.getName() : null}</Subheader>*/}
-          <ReactCSSTransitionGroup transitionName="fadeInOut" transitionEnterTimeout={300} transitionLeaveTimeout={300}>
+          <ReactCSSTransitionGroup
+            transitionName="fadeInOut"
+            transitionEnterTimeout={enterTimeout}
+            transitionLeaveTimeout={leaveTimeout}>
           {users.toList()
             .filter(e => !!e.getUsername().match(filterText))
             .map(e =>
@@ -469,13 +475,19 @@ class AppNotif extends React.Component<AppProps, {}> {
     const { ui: { messages } } = this.props;
     return (
       <div className="appNotif">
-        <ReactCSSTransitionGroup transitionName="fadeInOut" transitionEnterTimeout={300} transitionLeaveTimeout={300}>
+        <ReactCSSTransitionGroup
+          transitionName="fadeInOut"
+          transitionEnterTimeout={enterTimeout}
+          transitionLeaveTimeout={leaveTimeout}>
         {messages.map(e =>
           <div key={e.text + e.timestamp}
             className="appNotif-container appNotif-container_notif">{e.text}</div>
         )}
         </ReactCSSTransitionGroup>
-        <ReactCSSTransitionGroup transitionName="fadeInOut" transitionEnterTimeout={300} transitionLeave={false}>
+        <ReactCSSTransitionGroup
+          transitionName="fadeInOut"
+          transitionEnterTimeout={enterTimeout}
+          transitionLeave={false}>
         {warns.filter(e => e).map(e =>
           <div key={e}
             className="appNotif-container appNotif-container_warn">{e}</div>
