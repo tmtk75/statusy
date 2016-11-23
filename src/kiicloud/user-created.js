@@ -10,7 +10,7 @@ export function userCreated(params, ctx, done) {
     .then(args => {
       const user  = args[0];
       //const topic = args[1][1];  // NOTE: 401 if I use this. Why?
-      return sendMessage(admin.topicWithName("broadcast"), "USER-SIGNED-IN", {username: user.getUsername()})
+      return sendMessage(admin.topicWithName("broadcast"), "USER-SIGNED-UP", {username: user.getUsername()})
     })
     .then(_ => done())
     .catch(err => {

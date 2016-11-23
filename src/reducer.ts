@@ -91,8 +91,8 @@ const ui = handleActions<UIState, any>({
   "INVITED.resolved": (s: UIState, { payload: { inviter, group } }: Action<InvitedResolvedPayload>) =>
     assign({}, s, nextMsgs(s.messages, `Invited by ${inviter.getUsername()} to ${group.getName()}`)),
 
-  "USER-SIGNED-IN": (s: UIState, { payload: { username } }: Action<{username: string}>) =>
-    assign({}, s, nextMsgs(s.messages, `${username} signed in`)),
+  "USER-SIGNED-UP": (s: UIState, { payload: { username } }: Action<{username: string}>) =>
+    assign({}, s, nextMsgs(s.messages, `${username} signed up`)),
 
   "CLEAR-MESSAGES": (s: UIState, { payload }: Action<number>) =>
     assign({}, s, {
