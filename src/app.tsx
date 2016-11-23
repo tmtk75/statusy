@@ -199,7 +199,7 @@ class Message extends React.Component<AppProps, {status: string}> {
     if (!(me && pushMessages && client))
       return;
     const m = pushMessages.get(me.getUUID()) || {text: ""};
-    if (this.state.status === m.text)
+    if (this.state.status)
       return;
     this.state.status = m.text;
   }
@@ -225,6 +225,8 @@ class Message extends React.Component<AppProps, {status: string}> {
       console.debug("group is not found.");
       return;
     }
+    if (!this.state.status)
+      return;
     const topic = group.topicWithName("broadcast");
     dispatch(sendMessage({group, topic, text: this.state.status}));
     //this.setState({status: ""});
