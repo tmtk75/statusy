@@ -96,3 +96,18 @@ my-box-shadow()
 
 .section-text
   margin-left 0.5rem
+
+//
+.fadeInOut-enter
+  opacity 0.01
+
+.fadeInOut-enter.fadeInOut-enter-active
+  opacity 0.88
+  transition opacity 300ms ease-in
+
+.fadeInOut-leave
+  opacity 0.88
+
+.fadeInOut-leave.fadeInOut-leave-active
+  opacity 0.01
+  transition: opacity 300ms ease-in

@@ -1,4 +1,5 @@
 import * as React from "react"
+import * as ReactCSSTransitionGroup from 'react-addons-css-transition-group'
 import * as moment from "moment"
 import { remote } from "electron"
 import { Dispatch } from "redux"
@@ -244,6 +245,7 @@ class Members extends React.Component<AppProps, {}> {
       <div className="members">
         <List>
           {/*<Subheader>Recent statuses in {group ? group.getName() : null}</Subheader>*/}
+          <ReactCSSTransitionGroup transitionName="fadeInOut" transitionEnterTimeout={300} transitionLeaveTimeout={300}>
           {users.toList()
             .filter(e => !!e.getUsername().match(filterText))
             .map(e =>
@@ -253,6 +255,7 @@ class Members extends React.Component<AppProps, {}> {
                 >
                 <MemberItem user={e} message={pushMessages.get(e.getUUID())}/>
               </div>)}
+          </ReactCSSTransitionGroup>
         </List>
       </div>
     )
@@ -466,14 +469,18 @@ class AppNotif extends React.Component<AppProps, {}> {
     const { ui: { messages } } = this.props;
     return (
       <div className="appNotif">
+        <ReactCSSTransitionGroup transitionName="fadeInOut" transitionEnterTimeout={300} transitionLeaveTimeout={300}>
         {messages.map(e =>
           <div key={e.text + e.timestamp}
             className="appNotif-container appNotif-container_notif">{e.text}</div>
         )}
+        </ReactCSSTransitionGroup>
+        <ReactCSSTransitionGroup transitionName="fadeInOut" transitionEnterTimeout={300} transitionLeave={false}>
         {warns.filter(e => e).map(e =>
           <div key={e}
             className="appNotif-container appNotif-container_warn">{e}</div>
         )}
+        </ReactCSSTransitionGroup>
       </div>
     )
   }
@@ -483,7 +490,7 @@ class AppNotif extends React.Component<AppProps, {}> {
       if (messages.size > 0)
         dispatch(clearMessages(moment.now()));
     }
-    setInterval(f, 1000 * 2);
+    setInterval(f, 1000 * 2 /* interval to reap */);
   }
 }
 

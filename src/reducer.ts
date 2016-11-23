@@ -96,7 +96,7 @@ const ui = handleActions<UIState, any>({
 
   "CLEAR-MESSAGES": (s: UIState, { payload }: Action<number>) =>
     assign({}, s, {
-      messages: s.messages.filter(e => e.timestamp + 1000 * 3 > payload),
+      messages: s.messages.filter(e => e.timestamp + 1000 * 2 > payload),  // duration to be displayed 
     })
 }, {leftDrawer: false, filterText: "", messages: List<NotifMessage>()})
 
