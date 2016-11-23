@@ -194,6 +194,15 @@ class Message extends React.Component<AppProps, {status: string}> {
       status: "",
     }
   }
+  componentWillReceiveProps(nextProps: AppProps) {
+    const { dispatch, kiicloud: { profile: { me }, mqtt: { client } }, messages: { pushMessages } } = nextProps;
+    if (!(me && pushMessages && client))
+      return;
+    const m = pushMessages.get(me.getUUID()) || {text: ""};
+    if (this.state.status === m.text)
+      return;
+    this.state.status = m.text;
+  }
   render() {
     const { dispatch, kiicloud: { profile: { me, group }, mqtt: { client } } } = this.props;
     return (
