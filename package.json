@@ -7,14 +7,14 @@
     "start": "electron .",
     "build": "webpack --progress --colors",
     "build:watch": "webpack --watch --progress --colors",
+    "build:mkicon": "./bin/mkicon.sh ./dist/myicon ./assets/icon.png",
+    "release-build": "npm run distclean && npm run build && npm run build:mkicon && make archive",
     "kii:build": "webpack --progress --colors --config ./src/kiicloud/webpack.config.js",
     "kii:build:watch": "webpack --watch --progress --colors --config ./src/kiicloud/webpack.config.js",
     "kii:deploy-code": "kii-cli servercode deploy dist/kii-servercode.js",
-    "kii:deploy": "npm run kii:deploy-code; npm run kii:deploy-hook",
-    "kii:build-deploy": "npm run kii:build; npm run kii:deploy",
     "kii:deploy-hook": "kii-cli servercode hook-attach src/kiicloud/hook.json",
-    "package": "make package",
-    "mkicon": "./bin/mkicon.sh ./dist/myicon ./assets/icon.png",
+    "kii:deploy": "npm run kii:deploy-code && npm run kii:deploy-hook",
+    "kii:build-deploy": "npm run kii:build && npm run kii:deploy",
     "distclean": "rm -rf dist"
   },
   "devDependencies": {
