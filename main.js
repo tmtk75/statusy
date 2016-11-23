@@ -14,6 +14,7 @@ global.config = {
     apiEndpoint: process.env["KII_API_ENDPOINT"] || defaults.api_endpoint,
   },
   debug,
+  version: require("./package.json").version,
 };
 
 app.on('window-all-closed', () => {

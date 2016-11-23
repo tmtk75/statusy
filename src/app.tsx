@@ -28,7 +28,7 @@ import {
   clearMessages,
 } from "./action"
 import { KiiUser, KiiPushMessage, KiiGroup } from "kii-sdk"
-const { debug } = remote.getGlobal("config");
+const { debug, version } = remote.getGlobal("config");
 
 type AppProps = {
   dispatch: Dispatch<Action<any>>,
@@ -480,7 +480,7 @@ class AppFooter extends React.Component<AppProps, {}> {
   render() {
     return (
       <div className="appFooter">
-        Powered by Kii Cloud
+        v{version}, Powered by Kii Cloud
       </div>
     )
   }
