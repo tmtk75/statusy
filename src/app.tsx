@@ -4,7 +4,7 @@ import * as moment from "moment"
 import { remote } from "electron"
 import { Dispatch } from "redux"
 import { Action } from "redux-actions"
-import { FlatButton, TextField, Subheader, Divider,  List, ListItem, Avatar, SelectField, MenuItem, IconButton, Drawer } from "material-ui"
+import { FlatButton, TextField, List, ListItem, Avatar, SelectField, MenuItem, IconButton, Drawer } from "material-ui"
 import IconAccountBox from 'material-ui/svg-icons/action/account-box';
 import IconMenu from 'material-ui/svg-icons/navigation/menu';
 import IconGroup from 'material-ui/svg-icons/social/group';

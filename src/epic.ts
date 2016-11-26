@@ -264,6 +264,14 @@ const messageArrivedEpic = (a: ActionsObservable<KiiPushMessage>) =>
     .filter(a => a.type && a.payload)
     .mergeMap(a => Observable.of(a))
 
+const browserNotifEpic = (a: ActionsObservable<{username: string}>, s: Redux.Store<{}>) =>
+  a.ofType("USER-SIGNED-UP")
+    .do(m => new window.Notification("New user signed up", {
+      body: `Please invite him or her, ${m.payload.username}`,
+      silent: false,
+    }))
+    .mapTo({type: "USER-SIGNED-UP.notified"})
+
 export const rootEpic = combineEpics(
   linkEpic,
   sendStatusEpic,
@@ -279,4 +287,5 @@ export const rootEpic = combineEpics(
   inviteEpic,
   invitedEpic,
   messageArrivedEpic,
+  browserNotifEpic,
 )

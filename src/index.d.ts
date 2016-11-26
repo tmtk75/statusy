@@ -109,8 +109,18 @@ declare global {
     readonly timestamp: number,
   }
 
+  type NotificationOption = {
+    body: string,
+    silent: boolean,
+  }
+
+  interface Notification {
+    new (title: string, options: NotificationOption): Notification;
+  }
+
   interface Window {
     devToolsExtension(): StoreCreator;
+    Notification: Notification;
   }
 
 }
